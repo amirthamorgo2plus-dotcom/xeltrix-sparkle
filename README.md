@@ -1,36 +1,65 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Xeltrix Sparkle ✨
 
-## Getting Started
+Hotel housekeeping & operations app — your own, free, unlimited.
+Next.js + Supabase. English / Tamil / Hindi. PIN login. Photos + voice notes.
 
-First, run the development server:
+## Features
+- **Cleaner**: My Rooms → checklist + multiple photos → Mark Cleaned
+- **Supervisor**: Inspect → see proof → Approve / Redo (blocked while maintenance is open)
+- **Report Issue**: anyone → photo + **voice note** (records in-app)
+- **Owner Dashboard**: room board + open issues + present-today counts
+- **Check In**: one-tap attendance
+- **3 languages** (English / தமிழ் / हिन्दी), switchable anytime
+- **Name + 4-digit PIN** login (no email/SMS needed)
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+---
+
+## Setup (one time)
+
+### 1. Create a Supabase project
+- supabase.com → New Project (region: Mumbai / ap-south-1). Save the DB password.
+
+### 2. Run the database schema
+- Supabase → **SQL Editor** → New query → paste all of `supabase-schema.sql` → **Run**.
+- This creates the tables, security rules, realtime, and the `photos` + `voice` storage buckets.
+
+### 3. Add your keys
+- Copy `.env.local.example` to `.env.local`.
+- From Supabase → **Settings → API**, fill in:
+  - `NEXT_PUBLIC_SUPABASE_URL`
+  - `NEXT_PUBLIC_SUPABASE_ANON_KEY`
+  - `SUPABASE_SERVICE_ROLE_KEY`  (keep secret!)
+  - `SESSION_SECRET` = any long random text
+
+### 4. Create staff + sample rooms
+- Edit the staff list at the top of `scripts/seed.mjs` (names, roles, PINs).
+- Run:
+  ```
+  node --env-file=.env.local scripts/seed.mjs
+  ```
+- It prints each person's login PIN.
+
+### 5. Run it
 ```
+npm run dev
+```
+Open http://localhost:3000 — pick a name, enter the PIN.
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+---
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Deploy free (Vercel)
+1. Push this folder to a GitHub repo.
+2. vercel.com → New Project → import the repo.
+3. Add the same 4 env vars from `.env.local` in Vercel → Settings → Environment Variables.
+4. Deploy → you get `xeltrix-sparkle.vercel.app`.
+5. Staff open the link → log in → **Add to Home Screen**.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Default seed logins
+| Name | Role | PIN |
+|---|---|---|
+| Anitha | owner | 1234 |
+| Harini | supervisor | 1111 |
+| Suresh | cleaner | 2222 |
+| Kumar | cleaner | 3333 |
 
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+(Change these in `scripts/seed.mjs`, or later in the Supabase `staff` table.)
