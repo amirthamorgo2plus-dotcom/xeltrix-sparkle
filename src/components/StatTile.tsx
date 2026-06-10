@@ -2,10 +2,10 @@
 import { useI18n } from "@/lib/i18n/I18nProvider";
 
 const COLORS: Record<string, string> = {
-  emerald: "bg-emerald-50 text-emerald-700",
-  blue: "bg-blue-50 text-blue-700",
-  rose: "bg-rose-50 text-rose-700",
-  teal: "bg-teal-50 text-teal-700",
+  emerald: "from-emerald-50 to-emerald-100/60 text-emerald-700 ring-emerald-100",
+  blue: "from-blue-50 to-blue-100/60 text-blue-700 ring-blue-100",
+  rose: "from-rose-50 to-rose-100/60 text-rose-700 ring-rose-100",
+  teal: "from-teal-50 to-teal-100/60 text-teal-700 ring-teal-100",
 };
 
 export default function StatTile({
@@ -19,9 +19,11 @@ export default function StatTile({
 }) {
   const { t } = useI18n();
   return (
-    <div className={`rounded-2xl p-4 ${COLORS[color]}`}>
-      <p className="text-3xl font-bold">{value}</p>
-      <p className="text-sm font-medium">{t(tkey)}</p>
+    <div
+      className={`rounded-2xl bg-gradient-to-br p-4 ring-1 ring-inset ${COLORS[color]}`}
+    >
+      <p className="text-3xl font-bold leading-none">{value}</p>
+      <p className="mt-1.5 text-sm font-medium">{t(tkey)}</p>
     </div>
   );
 }
