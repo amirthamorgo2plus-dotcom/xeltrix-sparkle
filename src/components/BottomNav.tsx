@@ -10,6 +10,7 @@ const NAV: Record<string, { href: string; key: string; icon: string }[]> = {
     { href: "/checkin", key: "navCheckin", icon: "checkin" },
   ],
   supervisor: [
+    { href: "/dashboard", key: "navDashboard", icon: "dashboard" },
     { href: "/inspect", key: "navInspect", icon: "inspect" },
     { href: "/issues", key: "navIssues", icon: "issues" },
     { href: "/checkin", key: "navCheckin", icon: "checkin" },

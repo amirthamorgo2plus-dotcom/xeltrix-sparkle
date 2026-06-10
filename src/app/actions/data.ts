@@ -110,11 +110,25 @@ export async function checkIn() {
   revalidatePath("/dashboard");
 }
 
-// ---------- OWNER ----------
+// ---------- OWNER / SUPERVISOR: ASSIGNMENT ----------
+export async function getCleaners() {
+  const s = await requireSession();
+  if (s.role === "cleaner") throw new Error("Not allowed");
+  const sb = supabaseAdmin();
+  const { data } = await sb
+    .from("staff")
+    .select("id, name")
+    .eq("role", "cleaner")
+    .eq("active", true)
+    .order("name");
+  return (data ?? []) as { id: string; name: string }[];
+}
+
 export async function assignRoom(roomId: string, staffId: string | null) {
   const s = await requireSession();
   if (s.role === "cleaner") throw new Error("Not allowed");
   const sb = supabaseAdmin();
   await sb.from("rooms").update({ assigned_to: staffId }).eq("id", roomId);
   revalidatePath("/dashboard");
+  revalidatePath("/rooms");
 }

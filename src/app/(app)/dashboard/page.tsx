@@ -4,13 +4,15 @@ import StatusBadge from "@/components/StatusBadge";
 import RoomLabel from "@/components/RoomLabel";
 import StatTile from "@/components/StatTile";
 import PresentToday, { PresentPerson } from "@/components/PresentToday";
+import AssignSelect from "@/components/AssignSelect";
+import { getCleaners } from "@/app/actions/data";
 
 export const dynamic = "force-dynamic";
 
 export default async function DashboardPage() {
   const sb = supabaseAdmin();
-  const [{ data: rooms }, openIssues, { data: present }] = await Promise.all([
-    sb.from("rooms").select("id, room_no, status").order("room_no"),
+  const [{ data: rooms }, openIssues, { data: present }, cleaners] = await Promise.all([
+    sb.from("rooms").select("id, room_no, status, assigned_to").order("room_no"),
     sb
       .from("maintenance")
       .select("*", { count: "exact", head: true })
@@ -20,6 +22,7 @@ export default async function DashboardPage() {
       .select("id, staff_name, check_in")
       .gte("check_in", new Date(new Date().toDateString()).toISOString())
       .order("check_in", { ascending: true }),
+    getCleaners(),
   ]);
 
   const ready = (rooms ?? []).filter((r) => r.status === "ready").length;
@@ -53,11 +56,20 @@ export default async function DashboardPage() {
         {(rooms ?? []).map((r) => (
           <div
             key={r.id as string}
-            className="flex items-center justify-between rounded-2xl bg-white p-4 shadow-sm"
+            className="flex items-center justify-between gap-3 rounded-2xl bg-white p-4 shadow-sm"
           >
-            <p className="font-semibold text-slate-800">
-              <RoomLabel no={r.room_no as string} />
-            </p>
+            <div className="min-w-0">
+              <p className="font-semibold text-slate-800">
+                <RoomLabel no={r.room_no as string} />
+              </p>
+              <div className="mt-1.5">
+                <AssignSelect
+                  roomId={r.id as string}
+                  cleaners={cleaners}
+                  assignedTo={(r.assigned_to as string) ?? null}
+                />
+              </div>
+            </div>
             <StatusBadge status={r.status as string} />
           </div>
         ))}
