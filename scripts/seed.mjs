@@ -2,6 +2,9 @@
 // Run once:  node --env-file=.env.local scripts/seed.mjs
 import { createClient } from "@supabase/supabase-js";
 import bcrypt from "bcryptjs";
+import ws from "ws";
+// Node < 22 has no global WebSocket; Supabase realtime needs one.
+if (!globalThis.WebSocket) globalThis.WebSocket = ws;
 
 const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
 const key = process.env.SUPABASE_SERVICE_ROLE_KEY;

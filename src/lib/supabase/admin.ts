@@ -1,5 +1,10 @@
 import "server-only";
 import { createClient } from "@supabase/supabase-js";
+import ws from "ws";
+// Node < 22 has no global WebSocket; Supabase client needs one on the server.
+if (!(globalThis as { WebSocket?: unknown }).WebSocket) {
+  (globalThis as { WebSocket?: unknown }).WebSocket = ws;
+}
 
 // Server-only Supabase client using the SERVICE ROLE key.
 // Bypasses RLS — use ONLY inside server actions / route handlers,
