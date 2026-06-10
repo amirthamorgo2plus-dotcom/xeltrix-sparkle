@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { supabaseAdmin } from "@/lib/supabase/admin";
 import Heading, { SubHeading } from "@/components/Heading";
 import StatusBadge from "@/components/StatusBadge";
@@ -59,9 +60,12 @@ export default async function DashboardPage() {
             className="flex items-center justify-between gap-3 rounded-2xl bg-white p-4 shadow-sm"
           >
             <div className="min-w-0">
-              <p className="font-semibold text-slate-800">
+              <Link
+                href={`/rooms/${r.id}`}
+                className="font-semibold text-slate-800 underline-offset-2 hover:underline"
+              >
                 <RoomLabel no={r.room_no as string} />
-              </p>
+              </Link>
               <div className="mt-1.5">
                 <AssignSelect
                   roomId={r.id as string}
@@ -70,7 +74,9 @@ export default async function DashboardPage() {
                 />
               </div>
             </div>
-            <StatusBadge status={r.status as string} />
+            <Link href={`/rooms/${r.id}`}>
+              <StatusBadge status={r.status as string} />
+            </Link>
           </div>
         ))}
       </div>

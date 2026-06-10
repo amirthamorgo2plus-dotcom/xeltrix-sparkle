@@ -30,9 +30,8 @@ export default function LoginForm({ staff }: { staff: Staff[] }) {
 
   function press(d: string) {
     if (pin.length >= 4) return;
-    const next = pin + d;
-    setPin(next);
-    if (next.length === 4) submitPin(next);
+    setPin(pin + d);
+    setErr(false);
   }
 
   return (
@@ -120,8 +119,23 @@ export default function LoginForm({ staff }: { staff: Staff[] }) {
             >
               0
             </button>
-            <div />
+            <button
+              disabled={busy || pin.length !== 4}
+              onClick={() => submitPin(pin)}
+              aria-label={t("login")}
+              className="rounded-2xl bg-white py-4 text-xl font-bold text-teal-700 disabled:opacity-40"
+            >
+              {busy ? "…" : "✓"}
+            </button>
           </div>
+
+          <button
+            disabled={busy || pin.length !== 4}
+            onClick={() => submitPin(pin)}
+            className="mx-auto mt-5 block w-full max-w-xs rounded-2xl bg-white py-4 text-lg font-bold text-teal-700 disabled:opacity-40"
+          >
+            {busy ? t("saving") : t("login")}
+          </button>
         </div>
       )}
     </div>
