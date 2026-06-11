@@ -7,10 +7,21 @@ type Issue = {
   id: string;
   room_no: string;
   issue: string;
+  category?: string | null;
+  urgent?: boolean | null;
   photo_url: string | null;
   voice_url: string | null;
   reported_name: string;
   status: string;
+};
+
+const CAT_KEY: Record<string, string> = {
+  plumbing: "catPlumbing",
+  electrical: "catElectrical",
+  ac: "catAc",
+  furniture: "catFurniture",
+  cleaning: "catCleaning",
+  other: "catOther",
 };
 
 export default function IssueCard({
@@ -35,6 +46,18 @@ export default function IssueCard({
     <div className="rounded-2xl bg-white p-4 shadow-sm">
       <div className="flex items-start justify-between">
         <div>
+          <div className="mb-1 flex flex-wrap items-center gap-1.5">
+            {issue.urgent && (
+              <span className="rounded-full bg-rose-600 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-white">
+                ⚠ {t("urgent")}
+              </span>
+            )}
+            {issue.category && CAT_KEY[issue.category] && (
+              <span className="rounded-full bg-slate-100 px-2 py-0.5 text-[11px] font-medium text-slate-600">
+                {t(CAT_KEY[issue.category])}
+              </span>
+            )}
+          </div>
           <p className="font-semibold">{issue.issue}</p>
           <p className="text-xs text-slate-500">
             {t("room")} {issue.room_no} · {issue.reported_name}

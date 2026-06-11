@@ -1,4 +1,5 @@
 // Lightweight, dependency-free charts. Plain components (no client hooks).
+import TLabel from "./TLabel";
 
 const COLOR: Record<string, string> = {
   teal: "bg-teal-500",
@@ -16,10 +17,12 @@ export function BarChart({
   data,
   color = "teal",
   unit = "",
+  i18nLabel = false,
 }: {
   data: Bar[];
   color?: string;
   unit?: string;
+  i18nLabel?: boolean;
 }) {
   const max = Math.max(1, ...data.map((d) => d.value));
   return (
@@ -27,7 +30,7 @@ export function BarChart({
       {data.map((d, i) => (
         <div key={i} className="flex items-center gap-2">
           <span className="w-20 shrink-0 truncate text-xs text-slate-500">
-            {d.label}
+            {i18nLabel ? <TLabel tkey={d.label} /> : d.label}
           </span>
           <div className="h-5 flex-1 overflow-hidden rounded-md bg-slate-100">
             <div

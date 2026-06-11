@@ -28,7 +28,7 @@ export default async function RoomDetail({
   if (session && session.role !== "cleaner") {
     const { data: issues } = await sb
       .from("maintenance")
-      .select("id, room_no, issue, photo_url, voice_url, reported_name, status")
+      .select("id, room_no, issue, category, urgent, photo_url, voice_url, reported_name, status")
       .eq("room_id", id)
       .order("created_at", { ascending: false });
 

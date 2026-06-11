@@ -8,6 +8,8 @@ export type RoomIssue = {
   id: string;
   room_no: string;
   issue: string;
+  category?: string | null;
+  urgent?: boolean | null;
   photo_url: string | null;
   voice_url: string | null;
   reported_name: string;

@@ -12,8 +12,9 @@ export default async function IssuesPage() {
   const sb = supabaseAdmin();
   const { data: issues } = await sb
     .from("maintenance")
-    .select("id, room_no, issue, photo_url, voice_url, reported_name, status, created_at")
+    .select("id, room_no, issue, category, urgent, photo_url, voice_url, reported_name, status, created_at")
     .order("status", { ascending: true })
+    .order("urgent", { ascending: false })
     .order("created_at", { ascending: false });
 
   const canFix = session!.role !== "cleaner";
@@ -39,6 +40,8 @@ export default async function IssuesPage() {
               id: m.id as string,
               room_no: (m.room_no as string) ?? "",
               issue: m.issue as string,
+              category: (m.category as string) ?? null,
+              urgent: (m.urgent as boolean) ?? false,
               photo_url: (m.photo_url as string) ?? null,
               voice_url: (m.voice_url as string) ?? null,
               reported_name: (m.reported_name as string) ?? "",

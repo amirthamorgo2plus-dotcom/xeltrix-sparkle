@@ -137,6 +137,8 @@ export async function reportIssue(input: {
   roomId: string | null;
   roomNo: string;
   issue: string;
+  category: string | null;
+  urgent: boolean;
   photoUrl: string | null;
   voiceUrl: string | null;
 }) {
@@ -146,6 +148,8 @@ export async function reportIssue(input: {
     room_id: input.roomId,
     room_no: input.roomNo,
     issue: input.issue,
+    category: input.category,
+    urgent: input.urgent,
     photo_url: input.photoUrl,
     voice_url: input.voiceUrl,
     reported_by: s.id,
@@ -205,4 +209,40 @@ export async function assignRoom(roomId: string, staffId: string | null) {
     .eq("id", roomId);
   revalidatePath("/dashboard");
   revalidatePath("/rooms");
+}
+
+// Star-performer score: reward clean work, penalise redos.
+function starScore(cleaned: number, redos: number): number {
+  return cleaned * 10 - redos * 15;
+}
+
+// Top cleaner for the current month (for the dashboard badge).
+export async function getStarPerformer(): Promise<
+  { name: string; cleaned: number; redos: number } | null
+> {
+  const s = await requireSession();
+  if (s.role === "cleaner") return null;
+  const sb = supabaseAdmin();
+  const now = new Date();
+  const start = new Date(now.getFullYear(), now.getMonth(), 1).toISOString();
+  const { data } = await sb
+    .from("cleaning_events")
+    .select("cleaner_name, event")
+    .gte("created_at", start);
+
+  const agg = new Map<string, { cleaned: number; redos: number }>();
+  for (const e of (data ?? []) as { cleaner_name: string; event: string }[]) {
+    const name = e.cleaner_name ?? "—";
+    if (!agg.has(name)) agg.set(name, { cleaned: 0, redos: 0 });
+    if (e.event === "cleaned") agg.get(name)!.cleaned++;
+    else if (e.event === "redo") agg.get(name)!.redos++;
+  }
+  let best: { name: string; cleaned: number; redos: number } | null = null;
+  for (const [name, v] of agg) {
+    if (v.cleaned === 0) continue;
+    if (!best || starScore(v.cleaned, v.redos) > starScore(best.cleaned, best.redos)) {
+      best = { name, cleaned: v.cleaned, redos: v.redos };
+    }
+  }
+  return best;
 }

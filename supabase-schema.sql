@@ -50,6 +50,8 @@ create table if not exists maintenance (
   room_id uuid references rooms(id) on delete set null,
   room_no text,
   issue text not null,
+  category text,
+  urgent boolean default false,
   photo_url text,
   voice_url text,
   reported_by uuid references staff(id) on delete set null,

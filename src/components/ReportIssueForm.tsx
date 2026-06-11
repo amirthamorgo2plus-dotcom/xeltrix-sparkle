@@ -20,9 +20,20 @@ export default function ReportIssueForm({
   const router = useRouter();
   const [roomId, setRoomId] = useState(prefillRoomId ?? rooms[0]?.id ?? "");
   const [issue, setIssue] = useState("");
+  const [category, setCategory] = useState("plumbing");
+  const [urgent, setUrgent] = useState(false);
   const [photo, setPhoto] = useState<string | null>(null);
   const [voice, setVoice] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
+
+  const CATEGORIES = [
+    { value: "plumbing", key: "catPlumbing" },
+    { value: "electrical", key: "catElectrical" },
+    { value: "ac", key: "catAc" },
+    { value: "furniture", key: "catFurniture" },
+    { value: "cleaning", key: "catCleaning" },
+    { value: "other", key: "catOther" },
+  ];
 
   async function submit() {
     if (!issue.trim()) return;
@@ -32,6 +43,8 @@ export default function ReportIssueForm({
       roomId: roomId || null,
       roomNo: room?.room_no ?? "",
       issue: issue.trim(),
+      category,
+      urgent,
       photoUrl: photo,
       voiceUrl: voice,
     });
@@ -67,6 +80,44 @@ export default function ReportIssueForm({
         rows={3}
         className="mb-4 w-full rounded-xl border border-slate-300 bg-white p-3"
       />
+
+      <label className="mb-1 block text-sm font-medium text-slate-600">
+        {t("category")}
+      </label>
+      <select
+        value={category}
+        onChange={(e) => setCategory(e.target.value)}
+        className="mb-4 w-full rounded-xl border border-slate-300 bg-white p-3"
+      >
+        {CATEGORIES.map((c) => (
+          <option key={c.value} value={c.value}>
+            {t(c.key)}
+          </option>
+        ))}
+      </select>
+
+      <button
+        type="button"
+        onClick={() => setUrgent((v) => !v)}
+        className={`mb-4 flex w-full items-center justify-between rounded-xl border p-3 ${
+          urgent
+            ? "border-rose-300 bg-rose-50 text-rose-700"
+            : "border-slate-300 bg-white text-slate-600"
+        }`}
+      >
+        <span className="font-medium">⚠️ {t("urgent")}</span>
+        <span
+          className={`flex h-7 w-12 items-center rounded-full p-1 transition ${
+            urgent ? "bg-rose-500" : "bg-slate-300"
+          }`}
+        >
+          <span
+            className={`h-5 w-5 rounded-full bg-white transition ${
+              urgent ? "translate-x-5" : ""
+            }`}
+          />
+        </span>
+      </button>
 
       <div className="mb-3">
         <PhotoUpload onUploaded={(url) => setPhoto(url)} />

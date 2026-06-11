@@ -6,13 +6,14 @@ import RoomLabel from "@/components/RoomLabel";
 import StatTile from "@/components/StatTile";
 import PresentToday, { PresentPerson } from "@/components/PresentToday";
 import AssignSelect from "@/components/AssignSelect";
-import { getCleaners } from "@/app/actions/data";
+import StarBadge from "@/components/StarBadge";
+import { getCleaners, getStarPerformer } from "@/app/actions/data";
 
 export const dynamic = "force-dynamic";
 
 export default async function DashboardPage() {
   const sb = supabaseAdmin();
-  const [{ data: rooms }, openIssues, { data: present }, cleaners] = await Promise.all([
+  const [{ data: rooms }, openIssues, { data: present }, cleaners, star] = await Promise.all([
     sb.from("rooms").select("id, room_no, status, assigned_to").order("room_no"),
     sb
       .from("maintenance")
@@ -24,6 +25,7 @@ export default async function DashboardPage() {
       .gte("check_in", new Date(new Date().toDateString()).toISOString())
       .order("check_in", { ascending: true }),
     getCleaners(),
+    getStarPerformer(),
   ]);
 
   const ready = (rooms ?? []).filter((r) => r.status === "ready").length;
@@ -49,6 +51,8 @@ export default async function DashboardPage() {
         <StatTile value={openIssues.count ?? 0} tkey="openIssues" color="rose" />
         <StatTile value={people.length} tkey="presentTodayTitle" color="teal" />
       </div>
+
+      <StarBadge star={star} />
 
       <PresentToday people={people} />
 
