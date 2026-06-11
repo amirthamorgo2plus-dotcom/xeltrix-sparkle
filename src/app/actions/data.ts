@@ -182,6 +182,54 @@ export async function checkIn() {
   revalidatePath("/dashboard");
 }
 
+// ---------- OWNER / SUPERVISOR: ROOMS ----------
+export async function addRoom(
+  roomNo: string
+): Promise<{ ok: boolean; error?: string }> {
+  const s = await requireSession();
+  if (s.role === "cleaner") throw new Error("Not allowed");
+  const no = roomNo.trim();
+  if (!no) return { ok: false, error: "empty" };
+  const sb = supabaseAdmin();
+
+  const { data: existing } = await sb
+    .from("rooms")
+    .select("id")
+    .eq("room_no", no)
+    .maybeSingle();
+  if (existing) return { ok: false, error: "exists" };
+
+  const { error } = await sb.from("rooms").insert({ room_no: no, status: "ready" });
+  if (error) return { ok: false, error: error.message };
+  revalidatePath("/dashboard");
+  return { ok: true };
+}
+
+// Guest checked out → room needs cleaning again. Resets checklist and
+// assignment so the supervisor consciously assigns a cleaner.
+export async function markVacated(roomId: string) {
+  const s = await requireSession();
+  if (s.role === "cleaner") throw new Error("Not allowed");
+  const sb = supabaseAdmin();
+  await sb
+    .from("rooms")
+    .update({
+      status: "dirty",
+      floor_ok: false,
+      bathroom_ok: false,
+      bed_ok: false,
+      bin_ok: false,
+      ac_ok: false,
+      assigned_to: null,
+      assigned_at: null,
+      last_cleaned: null,
+    })
+    .eq("id", roomId);
+  revalidatePath("/dashboard");
+  revalidatePath("/rooms");
+  revalidatePath("/inspect");
+}
+
 // ---------- OWNER / SUPERVISOR: ASSIGNMENT ----------
 export async function getCleaners() {
   const s = await requireSession();

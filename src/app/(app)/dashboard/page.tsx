@@ -6,6 +6,8 @@ import RoomLabel from "@/components/RoomLabel";
 import StatTile from "@/components/StatTile";
 import PresentToday, { PresentPerson } from "@/components/PresentToday";
 import AssignSelect from "@/components/AssignSelect";
+import AddRoom from "@/components/AddRoom";
+import VacateButton from "@/components/VacateButton";
 import StarBadge from "@/components/StarBadge";
 import { getCleaners, getStarPerformer } from "@/app/actions/data";
 
@@ -56,7 +58,10 @@ export default async function DashboardPage() {
 
       <PresentToday people={people} />
 
-      <SubHeading tkey="roomBoard" />
+      <div className="mb-2 flex items-center justify-between">
+        <SubHeading tkey="roomBoard" />
+        <AddRoom />
+      </div>
       <div className="space-y-2">
         {(rooms ?? []).map((r) => (
           <div
@@ -78,9 +83,12 @@ export default async function DashboardPage() {
                 />
               </div>
             </div>
-            <Link href={`/rooms/${r.id}`}>
-              <StatusBadge status={r.status as string} />
-            </Link>
+            <div className="flex shrink-0 flex-col items-end gap-1.5">
+              <Link href={`/rooms/${r.id}`}>
+                <StatusBadge status={r.status as string} />
+              </Link>
+              {r.status === "ready" && <VacateButton roomId={r.id as string} />}
+            </div>
           </div>
         ))}
       </div>
