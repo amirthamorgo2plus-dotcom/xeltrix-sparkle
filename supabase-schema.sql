@@ -22,6 +22,7 @@ create table if not exists rooms (
   status text not null default 'dirty'
     check (status in ('dirty','cleaning','to_inspect','ready','maintenance')),
   assigned_to uuid references staff(id) on delete set null,
+  assigned_at timestamptz,
   check_in_time text,
   last_cleaned timestamptz,
   -- cleaning checklist
@@ -68,6 +69,20 @@ create table if not exists attendance (
   day date default current_date
 );
 
+-- ---------- CLEANING EVENTS (reports / performance log) ----------
+create table if not exists cleaning_events (
+  id uuid primary key default gen_random_uuid(),
+  room_id uuid references rooms(id) on delete set null,
+  room_no text,
+  cleaner_id uuid references staff(id) on delete set null,
+  cleaner_name text,
+  event text not null check (event in ('cleaned','redo','approved')),
+  duration_secs integer,
+  created_at timestamptz default now()
+);
+create index if not exists cleaning_events_created_idx on cleaning_events (created_at);
+create index if not exists cleaning_events_cleaner_idx on cleaning_events (cleaner_id);
+
 -- ---------- helper: count open maintenance per room ----------
 create or replace view rooms_with_open_issues as
 select r.*,
@@ -87,11 +102,13 @@ alter table rooms enable row level security;
 alter table room_photos enable row level security;
 alter table maintenance enable row level security;
 alter table attendance enable row level security;
+alter table cleaning_events enable row level security;
 
 -- public READ for operational tables (enables realtime on client)
 create policy "read rooms"        on rooms        for select using (true);
 create policy "read room_photos"  on room_photos  for select using (true);
 create policy "read maintenance"  on maintenance  for select using (true);
+create policy "read cleaning_events" on cleaning_events for select using (true);
 create policy "read attendance"   on attendance   for select using (true);
 -- NOTE: no policies on staff -> clients cannot read it. PINs stay safe.
 

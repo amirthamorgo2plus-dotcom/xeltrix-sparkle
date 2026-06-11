@@ -13,12 +13,14 @@ const NAV: Record<string, { href: string; key: string; icon: string }[]> = {
     { href: "/dashboard", key: "navDashboard", icon: "dashboard" },
     { href: "/inspect", key: "navInspect", icon: "inspect" },
     { href: "/issues", key: "navIssues", icon: "issues" },
+    { href: "/reports", key: "navReports", icon: "chart" },
     { href: "/checkin", key: "navCheckin", icon: "checkin" },
   ],
   owner: [
     { href: "/dashboard", key: "navDashboard", icon: "dashboard" },
     { href: "/inspect", key: "navInspect", icon: "inspect" },
     { href: "/issues", key: "navIssues", icon: "issues" },
+    { href: "/reports", key: "navReports", icon: "chart" },
     { href: "/checkin", key: "navCheckin", icon: "checkin" },
   ],
 };
@@ -56,6 +58,14 @@ const ICONS: Record<string, React.ReactNode> = {
     <>
       <circle cx="12" cy="12" r="9" />
       <path d="M12 7v5l3 2" />
+    </>
+  ),
+  chart: (
+    <>
+      <path d="M3 3v18h18" />
+      <rect x="7" y="11" width="3" height="6" rx="0.5" />
+      <rect x="12" y="7" width="3" height="10" rx="0.5" />
+      <rect x="17" y="13" width="3" height="4" rx="0.5" />
     </>
   ),
 };

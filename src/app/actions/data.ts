@@ -14,8 +14,20 @@ export async function markCleaned(
   roomId: string,
   checklist: { floor: boolean; bathroom: boolean; bed: boolean; bin: boolean; ac: boolean }
 ) {
-  await requireSession();
+  const s = await requireSession();
   const sb = supabaseAdmin();
+
+  // Time taken = from when the room was assigned to now.
+  const { data: room } = await sb
+    .from("rooms")
+    .select("room_no, assigned_at")
+    .eq("id", roomId)
+    .single();
+  const now = new Date();
+  const durationSecs = room?.assigned_at
+    ? Math.max(0, Math.round((now.getTime() - new Date(room.assigned_at as string).getTime()) / 1000))
+    : null;
+
   await sb
     .from("rooms")
     .update({
@@ -25,9 +37,19 @@ export async function markCleaned(
       bed_ok: checklist.bed,
       bin_ok: checklist.bin,
       ac_ok: checklist.ac,
-      last_cleaned: new Date().toISOString(),
+      last_cleaned: now.toISOString(),
     })
     .eq("id", roomId);
+
+  await sb.from("cleaning_events").insert({
+    room_id: roomId,
+    room_no: (room?.room_no as string) ?? null,
+    cleaner_id: s.id,
+    cleaner_name: s.name,
+    event: "cleaned",
+    duration_secs: durationSecs,
+  });
+
   revalidatePath("/rooms");
   revalidatePath("/inspect");
 }
@@ -40,6 +62,30 @@ export async function addRoomPhoto(roomId: string, url: string) {
 }
 
 // ---------- SUPERVISOR ----------
+// Look up the cleaner currently assigned to a room (for event attribution).
+async function assignedCleaner(roomId: string) {
+  const sb = supabaseAdmin();
+  const { data: room } = await sb
+    .from("rooms")
+    .select("room_no, assigned_to")
+    .eq("id", roomId)
+    .single();
+  let name: string | null = null;
+  if (room?.assigned_to) {
+    const { data: st } = await sb
+      .from("staff")
+      .select("name")
+      .eq("id", room.assigned_to as string)
+      .single();
+    name = (st?.name as string) ?? null;
+  }
+  return {
+    roomNo: (room?.room_no as string) ?? null,
+    cleanerId: (room?.assigned_to as string) ?? null,
+    cleanerName: name,
+  };
+}
+
 export async function approveRoom(roomId: string) {
   const s = await requireSession();
   if (s.role === "cleaner") throw new Error("Not allowed");
@@ -51,7 +97,16 @@ export async function approveRoom(roomId: string) {
     .eq("room_id", roomId)
     .eq("status", "open");
   if ((count ?? 0) > 0) throw new Error("Open maintenance — cannot approve");
+
+  const who = await assignedCleaner(roomId);
   await sb.from("rooms").update({ status: "ready" }).eq("id", roomId);
+  await sb.from("cleaning_events").insert({
+    room_id: roomId,
+    room_no: who.roomNo,
+    cleaner_id: who.cleanerId,
+    cleaner_name: who.cleanerName,
+    event: "approved",
+  });
   revalidatePath("/inspect");
   revalidatePath("/dashboard");
 }
@@ -60,7 +115,20 @@ export async function redoRoom(roomId: string) {
   const s = await requireSession();
   if (s.role === "cleaner") throw new Error("Not allowed");
   const sb = supabaseAdmin();
-  await sb.from("rooms").update({ status: "cleaning" }).eq("id", roomId);
+
+  const who = await assignedCleaner(roomId);
+  // Reset the clock so the re-clean is timed from now.
+  await sb
+    .from("rooms")
+    .update({ status: "cleaning", assigned_at: new Date().toISOString() })
+    .eq("id", roomId);
+  await sb.from("cleaning_events").insert({
+    room_id: roomId,
+    room_no: who.roomNo,
+    cleaner_id: who.cleanerId,
+    cleaner_name: who.cleanerName,
+    event: "redo",
+  });
   revalidatePath("/inspect");
 }
 
@@ -128,7 +196,13 @@ export async function assignRoom(roomId: string, staffId: string | null) {
   const s = await requireSession();
   if (s.role === "cleaner") throw new Error("Not allowed");
   const sb = supabaseAdmin();
-  await sb.from("rooms").update({ assigned_to: staffId }).eq("id", roomId);
+  await sb
+    .from("rooms")
+    .update({
+      assigned_to: staffId,
+      assigned_at: staffId ? new Date().toISOString() : null,
+    })
+    .eq("id", roomId);
   revalidatePath("/dashboard");
   revalidatePath("/rooms");
 }
