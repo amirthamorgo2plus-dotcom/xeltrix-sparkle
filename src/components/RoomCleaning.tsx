@@ -53,7 +53,7 @@ export default function RoomCleaning({
 
   return (
     <div>
-      <Link href="/rooms" className="mb-3 inline-block text-sm text-teal-600">
+      <Link href="/rooms" className="mb-3 inline-block text-sm text-amber-600">
         ← {t("back")}
       </Link>
       <div className="mb-4 flex items-center justify-between">
@@ -74,7 +74,7 @@ export default function RoomCleaning({
             <span className="font-medium">{t(it.label)}</span>
             <span
               className={`flex h-7 w-12 items-center rounded-full p-1 transition ${
-                chk[it.key] ? "bg-emerald-500" : "bg-slate-300"
+                chk[it.key] ? "bg-emerald-500" : "bg-stone-300"
               }`}
             >
               <span
@@ -104,7 +104,7 @@ export default function RoomCleaning({
       <button
         onClick={save}
         disabled={busy}
-        className="mt-5 w-full rounded-2xl bg-teal-600 py-4 text-lg font-semibold text-white disabled:opacity-60"
+        className="mt-5 w-full rounded-2xl bg-amber-600 py-4 text-lg font-semibold text-white disabled:opacity-60"
       >
         {busy ? t("saving") : t("markCleaned")}
       </button>

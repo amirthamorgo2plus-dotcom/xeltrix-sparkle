@@ -23,7 +23,7 @@ export default async function RootLayout({
   const session = await getSession();
   return (
     <html lang="en" className="h-full antialiased">
-      <body className="min-h-full bg-slate-50 text-slate-900">
+      <body className="min-h-full bg-stone-50 text-stone-900">
         <I18nProvider initialLang={session?.lang ?? "en"}>{children}</I18nProvider>
       </body>
     </html>

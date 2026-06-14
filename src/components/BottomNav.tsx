@@ -92,7 +92,7 @@ export default function BottomNav({ role }: { role: string }) {
   const { t } = useI18n();
   const items = NAV[role] ?? NAV.cleaner;
   return (
-    <nav className="fixed bottom-0 left-0 right-0 z-20 mx-auto flex max-w-md justify-around border-t border-slate-200 bg-white/95 backdrop-blur">
+    <nav className="fixed bottom-0 left-0 right-0 z-20 mx-auto flex max-w-md justify-around border-t border-stone-200 bg-white/95 backdrop-blur">
       {items.map((it) => {
         const active = path.startsWith(it.href);
         return (
@@ -100,7 +100,7 @@ export default function BottomNav({ role }: { role: string }) {
             key={it.href}
             href={it.href}
             className={`flex flex-1 flex-col items-center gap-1 py-2.5 text-xs transition-colors ${
-              active ? "text-teal-600" : "text-slate-400"
+              active ? "text-amber-600" : "text-stone-400"
             }`}
           >
             <NavIcon name={it.icon} active={active} />

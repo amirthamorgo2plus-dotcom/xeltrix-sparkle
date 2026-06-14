@@ -15,8 +15,8 @@ export default function StarBadge({
         <p className="text-xs font-semibold uppercase tracking-wide text-amber-700">
           {t("starPerformer")}
         </p>
-        <p className="truncate text-lg font-bold text-slate-800">{star.name}</p>
-        <p className="text-xs text-slate-500">
+        <p className="truncate text-lg font-bold text-stone-800">{star.name}</p>
+        <p className="text-xs text-stone-500">
           {star.cleaned} {t("mRoomsCleaned")} · {star.redos} {t("mRedos")}
         </p>
       </div>

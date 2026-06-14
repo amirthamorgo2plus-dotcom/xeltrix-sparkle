@@ -32,7 +32,7 @@ export default function AddRoom() {
     return (
       <button
         onClick={() => setOpen(true)}
-        className="rounded-lg border border-teal-300 bg-teal-50 px-3 py-1.5 text-sm font-semibold text-teal-700"
+        className="rounded-lg border border-amber-300 bg-amber-50 px-3 py-1.5 text-sm font-semibold text-amber-700"
       >
         ＋ {t("addRoom")}
       </button>
@@ -40,7 +40,7 @@ export default function AddRoom() {
   }
 
   return (
-    <div className="rounded-xl border border-slate-200 bg-white p-2">
+    <div className="rounded-xl border border-stone-200 bg-white p-2">
       <div className="flex items-center gap-2">
         <input
           autoFocus
@@ -48,12 +48,12 @@ export default function AddRoom() {
           onChange={(e) => setNo(e.target.value)}
           onKeyDown={(e) => e.key === "Enter" && save()}
           placeholder={t("roomNumber")}
-          className="w-28 rounded-lg border border-slate-300 px-2 py-1.5 text-sm"
+          className="w-28 rounded-lg border border-stone-300 px-2 py-1.5 text-sm"
         />
         <button
           onClick={save}
           disabled={pending || !no.trim()}
-          className="rounded-lg bg-teal-600 px-3 py-1.5 text-sm font-semibold text-white disabled:opacity-50"
+          className="rounded-lg bg-amber-600 px-3 py-1.5 text-sm font-semibold text-white disabled:opacity-50"
         >
           {t("add")}
         </button>
@@ -63,7 +63,7 @@ export default function AddRoom() {
             setNo("");
             setErr(null);
           }}
-          className="rounded-lg px-2 py-1.5 text-sm text-slate-500"
+          className="rounded-lg px-2 py-1.5 text-sm text-stone-500"
         >
           {t("cancel")}
         </button>

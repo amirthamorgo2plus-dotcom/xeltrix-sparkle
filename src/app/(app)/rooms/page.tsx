@@ -33,7 +33,7 @@ export default async function RoomsPage() {
                 <RoomLabel no={r.room_no as string} />
               </p>
               {r.check_in_time && (
-                <p className="text-xs text-slate-500">🕑 {r.check_in_time as string}</p>
+                <p className="text-xs text-stone-500">🕑 {r.check_in_time as string}</p>
               )}
             </div>
             <StatusBadge status={r.status as string} />

@@ -53,7 +53,7 @@ export default async function CheckinPage() {
         {(rows ?? []).map((r) => (
           <li
             key={r.id as string}
-            className="rounded-xl bg-white px-4 py-2 text-sm text-slate-600 shadow-sm"
+            className="rounded-xl bg-white px-4 py-2 text-sm text-stone-600 shadow-sm"
           >
             ✅ {new Date(r.check_in as string).toLocaleString()}
           </li>

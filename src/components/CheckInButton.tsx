@@ -23,7 +23,7 @@ export default function CheckInButton() {
     <button
       onClick={go}
       disabled={busy}
-      className="w-full rounded-2xl bg-teal-600 py-5 text-lg font-semibold text-white disabled:opacity-60"
+      className="w-full rounded-2xl bg-amber-600 py-5 text-lg font-semibold text-white disabled:opacity-60"
     >
       {done ? `✅ ${t("checkedIn")}` : `🕒 ${t("presentToday")}`}
     </button>

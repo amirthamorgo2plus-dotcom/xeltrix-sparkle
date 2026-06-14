@@ -53,7 +53,7 @@ export default async function DashboardPage() {
         {session?.role === "owner" && (
           <Link
             href="/staff"
-            className="mb-3 rounded-lg border border-slate-300 bg-white px-3 py-1.5 text-sm font-semibold text-slate-700"
+            className="mb-3 rounded-lg border border-stone-300 bg-white px-3 py-1.5 text-sm font-semibold text-stone-700"
           >
             👥 <TLabel tkey="manageStaff" />
           </Link>
@@ -84,7 +84,7 @@ export default async function DashboardPage() {
             <div className="min-w-0">
               <Link
                 href={`/rooms/${r.id}`}
-                className="font-semibold text-slate-800 underline-offset-2 hover:underline"
+                className="font-semibold text-stone-800 underline-offset-2 hover:underline"
               >
                 <RoomLabel no={r.room_no as string} />
               </Link>

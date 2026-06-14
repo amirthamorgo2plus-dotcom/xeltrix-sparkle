@@ -1,8 +1,8 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #faf7f2; /* warm cream */
+  --foreground: #1c1917; /* stone-900 */
 }
 
 @theme inline {
@@ -12,7 +12,7 @@
   --font-mono: var(--font-geist-mono);
 }
 
-/* The app uses hardcoded light surfaces (white / slate-50) everywhere,
+/* The app uses hardcoded light surfaces (white / stone-50) everywhere,
    so force a light theme — otherwise a phone in dark mode flips text to
    near-white and it disappears on the light cards. */
 :root {

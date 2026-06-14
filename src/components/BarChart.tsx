@@ -2,12 +2,12 @@
 import TLabel from "./TLabel";
 
 const COLOR: Record<string, string> = {
-  teal: "bg-teal-500",
+  teal: "bg-amber-500",
   emerald: "bg-emerald-500",
   blue: "bg-blue-500",
   rose: "bg-rose-500",
   amber: "bg-amber-500",
-  slate: "bg-slate-400",
+  slate: "bg-stone-400",
 };
 
 export type Bar = { label: string; value: number; hint?: string };
@@ -29,16 +29,16 @@ export function BarChart({
     <div className="space-y-2">
       {data.map((d, i) => (
         <div key={i} className="flex items-center gap-2">
-          <span className="w-20 shrink-0 truncate text-xs text-slate-500">
+          <span className="w-20 shrink-0 truncate text-xs text-stone-500">
             {i18nLabel ? <TLabel tkey={d.label} /> : d.label}
           </span>
-          <div className="h-5 flex-1 overflow-hidden rounded-md bg-slate-100">
+          <div className="h-5 flex-1 overflow-hidden rounded-md bg-stone-100">
             <div
               className={`h-full rounded-md ${COLOR[color] ?? COLOR.teal}`}
               style={{ width: `${(d.value / max) * 100}%` }}
             />
           </div>
-          <span className="w-12 shrink-0 text-right text-xs font-semibold text-slate-700">
+          <span className="w-12 shrink-0 text-right text-xs font-semibold text-stone-700">
             {d.hint ?? `${d.value}${unit}`}
           </span>
         </div>
@@ -61,7 +61,7 @@ export function DayBars({ data, color = "teal" }: { data: Bar[]; color?: string 
             style={{ height: `${Math.max(2, (d.value / max) * 80)}px` }}
             title={`${d.label}: ${d.value}`}
           />
-          <span className="text-[8px] leading-none text-slate-400">{d.label}</span>
+          <span className="text-[8px] leading-none text-stone-400">{d.label}</span>
         </div>
       ))}
     </div>

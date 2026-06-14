@@ -28,13 +28,13 @@ export default function ReportFilters({
 
   return (
     <div className="mb-5 flex items-center gap-2">
-      <div className="flex rounded-xl bg-slate-100 p-1">
+      <div className="flex rounded-xl bg-stone-100 p-1">
         {(["day", "month"] as const).map((s) => (
           <button
             key={s}
             onClick={() => switchScope(s)}
             className={`rounded-lg px-3 py-1.5 text-sm font-medium transition ${
-              scope === s ? "bg-white text-teal-700 shadow-sm" : "text-slate-500"
+              scope === s ? "bg-white text-amber-700 shadow-sm" : "text-stone-500"
             }`}
           >
             {t(s === "day" ? "filterDay" : "filterMonth")}
@@ -46,7 +46,7 @@ export default function ReportFilters({
         type={scope === "day" ? "date" : "month"}
         value={value}
         onChange={(e) => go(scope, e.target.value)}
-        className="rounded-xl border border-slate-300 bg-white px-3 py-1.5 text-sm"
+        className="rounded-xl border border-stone-300 bg-white px-3 py-1.5 text-sm"
       />
     </div>
   );

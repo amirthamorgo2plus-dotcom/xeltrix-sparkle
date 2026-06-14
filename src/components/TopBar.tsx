@@ -8,11 +8,11 @@ export default function TopBar({ name, role }: { name: string; role: string }) {
   const router = useRouter();
   const { t } = useI18n();
   return (
-    <header className="sticky top-0 z-10 bg-gradient-to-r from-teal-600 to-teal-700 px-4 py-3 text-white">
+    <header className="sticky top-0 z-10 rounded-b-3xl bg-gradient-to-br from-amber-500 via-amber-600 to-orange-600 px-4 py-3 text-white shadow-md shadow-amber-900/10">
       <div className="flex items-center justify-between">
         <div>
           <p className="text-lg font-bold leading-tight">✨ {t("appName")}</p>
-          <p className="text-xs text-teal-100">
+          <p className="text-xs text-amber-100">
             {name} · {role}
           </p>
         </div>

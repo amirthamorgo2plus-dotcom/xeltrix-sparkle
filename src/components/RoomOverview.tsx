@@ -35,7 +35,7 @@ export default function RoomOverview({
 
   return (
     <div>
-      <Link href={backHref} className="mb-3 inline-block text-sm text-teal-600">
+      <Link href={backHref} className="mb-3 inline-block text-sm text-amber-600">
         ← {t("back")}
       </Link>
 
@@ -47,11 +47,11 @@ export default function RoomOverview({
       </div>
 
       {/* Photos */}
-      <h2 className="mb-2 text-sm font-semibold text-slate-700">
+      <h2 className="mb-2 text-sm font-semibold text-stone-700">
         {t("photosTitle")}
       </h2>
       {photos.length === 0 ? (
-        <p className="rounded-2xl bg-white px-4 py-3 text-sm text-slate-400 shadow-sm">
+        <p className="rounded-2xl bg-white px-4 py-3 text-sm text-stone-400 shadow-sm">
           {t("noPhotos")}
         </p>
       ) : (
@@ -70,11 +70,11 @@ export default function RoomOverview({
       )}
 
       {/* Issues (with image + audio) */}
-      <h2 className="mb-2 mt-5 text-sm font-semibold text-slate-700">
+      <h2 className="mb-2 mt-5 text-sm font-semibold text-stone-700">
         {t("issuesTitle")}
       </h2>
       {issues.length === 0 ? (
-        <p className="rounded-2xl bg-white px-4 py-3 text-sm text-slate-400 shadow-sm">
+        <p className="rounded-2xl bg-white px-4 py-3 text-sm text-stone-400 shadow-sm">
           {t("noIssues")}
         </p>
       ) : (

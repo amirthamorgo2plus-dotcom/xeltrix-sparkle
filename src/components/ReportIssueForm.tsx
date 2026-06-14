@@ -53,18 +53,18 @@ export default function ReportIssueForm({
 
   return (
     <div>
-      <Link href="/issues" className="mb-3 inline-block text-sm text-teal-600">
+      <Link href="/issues" className="mb-3 inline-block text-sm text-amber-600">
         ← {t("back")}
       </Link>
       <h1 className="mb-4 text-xl font-bold">{t("reportIssue")}</h1>
 
-      <label className="mb-1 block text-sm font-medium text-slate-600">
+      <label className="mb-1 block text-sm font-medium text-stone-600">
         {t("room")}
       </label>
       <select
         value={roomId}
         onChange={(e) => setRoomId(e.target.value)}
-        className="mb-4 w-full rounded-xl border border-slate-300 bg-white p-3"
+        className="mb-4 w-full rounded-xl border border-stone-300 bg-white p-3"
       >
         {rooms.map((r) => (
           <option key={r.id} value={r.id}>
@@ -78,16 +78,16 @@ export default function ReportIssueForm({
         onChange={(e) => setIssue(e.target.value)}
         placeholder={t("issue")}
         rows={3}
-        className="mb-4 w-full rounded-xl border border-slate-300 bg-white p-3"
+        className="mb-4 w-full rounded-xl border border-stone-300 bg-white p-3"
       />
 
-      <label className="mb-1 block text-sm font-medium text-slate-600">
+      <label className="mb-1 block text-sm font-medium text-stone-600">
         {t("category")}
       </label>
       <select
         value={category}
         onChange={(e) => setCategory(e.target.value)}
-        className="mb-4 w-full rounded-xl border border-slate-300 bg-white p-3"
+        className="mb-4 w-full rounded-xl border border-stone-300 bg-white p-3"
       >
         {CATEGORIES.map((c) => (
           <option key={c.value} value={c.value}>
@@ -102,13 +102,13 @@ export default function ReportIssueForm({
         className={`mb-4 flex w-full items-center justify-between rounded-xl border p-3 ${
           urgent
             ? "border-rose-300 bg-rose-50 text-rose-700"
-            : "border-slate-300 bg-white text-slate-600"
+            : "border-stone-300 bg-white text-stone-600"
         }`}
       >
         <span className="font-medium">⚠️ {t("urgent")}</span>
         <span
           className={`flex h-7 w-12 items-center rounded-full p-1 transition ${
-            urgent ? "bg-rose-500" : "bg-slate-300"
+            urgent ? "bg-rose-500" : "bg-stone-300"
           }`}
         >
           <span

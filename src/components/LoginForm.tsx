@@ -35,7 +35,7 @@ export default function LoginForm({ staff }: { staff: Staff[] }) {
   }
 
   return (
-    <div className="mx-auto flex min-h-screen max-w-md flex-col bg-gradient-to-b from-teal-600 to-teal-700 px-6 text-white">
+    <div className="mx-auto flex min-h-screen max-w-md flex-col bg-gradient-to-br from-orange-500 via-amber-600 to-amber-800 px-6 text-white">
       <div className="flex justify-end pt-4">
         <LanguageSwitcher />
       </div>
@@ -45,12 +45,12 @@ export default function LoginForm({ staff }: { staff: Staff[] }) {
           ✨
         </div>
         <h1 className="text-2xl font-bold">{t("appName")}</h1>
-        <p className="text-sm text-teal-100">{t("tagline")}</p>
+        <p className="text-sm text-amber-100">{t("tagline")}</p>
       </div>
 
       {!picked ? (
         <div className="mt-8">
-          <p className="mb-3 text-center text-teal-100">{t("selectName")}</p>
+          <p className="mb-3 text-center text-amber-100">{t("selectName")}</p>
           <div className="grid grid-cols-2 gap-3">
             {staff.map((s) => (
               <button
@@ -59,13 +59,13 @@ export default function LoginForm({ staff }: { staff: Staff[] }) {
                 className="rounded-2xl bg-white/15 px-4 py-4 text-left font-semibold hover:bg-white/25"
               >
                 {s.name}
-                <span className="block text-xs font-normal text-teal-100">
+                <span className="block text-xs font-normal text-amber-100">
                   {s.role}
                 </span>
               </button>
             ))}
             {staff.length === 0 && (
-              <p className="col-span-2 text-center text-teal-100">
+              <p className="col-span-2 text-center text-amber-100">
                 No staff yet — run the seed script.
               </p>
             )}
@@ -79,11 +79,11 @@ export default function LoginForm({ staff }: { staff: Staff[] }) {
               setPin("");
               setErr(false);
             }}
-            className="mb-4 text-sm text-teal-100"
+            className="mb-4 text-sm text-amber-100"
           >
             ← {picked.name}
           </button>
-          <p className="mb-4 text-teal-100">{t("enterPin")}</p>
+          <p className="mb-4 text-amber-100">{t("enterPin")}</p>
           <div className="mb-4 flex justify-center gap-3">
             {[0, 1, 2, 3].map((i) => (
               <div
@@ -123,7 +123,7 @@ export default function LoginForm({ staff }: { staff: Staff[] }) {
               disabled={busy || pin.length !== 4}
               onClick={() => submitPin(pin)}
               aria-label={t("login")}
-              className="rounded-2xl bg-white py-4 text-xl font-bold text-teal-700 disabled:opacity-40"
+              className="rounded-2xl bg-white py-4 text-xl font-bold text-amber-700 disabled:opacity-40"
             >
               {busy ? "…" : "✓"}
             </button>
@@ -132,7 +132,7 @@ export default function LoginForm({ staff }: { staff: Staff[] }) {
           <button
             disabled={busy || pin.length !== 4}
             onClick={() => submitPin(pin)}
-            className="mx-auto mt-5 block w-full max-w-xs rounded-2xl bg-white py-4 text-lg font-bold text-teal-700 disabled:opacity-40"
+            className="mx-auto mt-5 block w-full max-w-xs rounded-2xl bg-white py-4 text-lg font-bold text-amber-700 disabled:opacity-40"
           >
             {busy ? t("saving") : t("login")}
           </button>

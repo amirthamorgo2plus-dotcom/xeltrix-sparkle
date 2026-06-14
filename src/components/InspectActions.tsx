@@ -54,7 +54,7 @@ export default function InspectActions({
 
   return (
     <div>
-      <Link href="/inspect" className="mb-3 inline-block text-sm text-teal-600">
+      <Link href="/inspect" className="mb-3 inline-block text-sm text-amber-600">
         ← {t("back")}
       </Link>
       <h1 className="mb-4 text-2xl font-bold">

@@ -58,18 +58,18 @@ export default function StaffManager({ staff }: { staff: Staff[] }) {
     <div>
       {/* Add form */}
       <div className="mb-5 space-y-3 rounded-2xl bg-white p-4 shadow-sm">
-        <p className="font-semibold text-slate-800">{t("addEmployee")}</p>
+        <p className="font-semibold text-stone-800">{t("addEmployee")}</p>
         <input
           value={name}
           onChange={(e) => setName(e.target.value)}
           placeholder={t("fieldName")}
-          className="w-full rounded-xl border border-slate-300 p-3 text-sm"
+          className="w-full rounded-xl border border-stone-300 p-3 text-sm"
         />
         <div className="grid grid-cols-2 gap-3">
           <select
             value={role}
             onChange={(e) => setRole(e.target.value)}
-            className="rounded-xl border border-slate-300 bg-white p-3 text-sm"
+            className="rounded-xl border border-stone-300 bg-white p-3 text-sm"
             aria-label={t("fieldRole")}
           >
             <option value="cleaner">{t("roleCleaner")}</option>
@@ -79,7 +79,7 @@ export default function StaffManager({ staff }: { staff: Staff[] }) {
           <select
             value={lang}
             onChange={(e) => setLang(e.target.value)}
-            className="rounded-xl border border-slate-300 bg-white p-3 text-sm"
+            className="rounded-xl border border-stone-300 bg-white p-3 text-sm"
             aria-label={t("fieldLang")}
           >
             <option value="en">English</option>
@@ -92,13 +92,13 @@ export default function StaffManager({ staff }: { staff: Staff[] }) {
           onChange={(e) => setPin(e.target.value.replace(/\D/g, "").slice(0, 4))}
           placeholder={t("fieldPin")}
           inputMode="numeric"
-          className="w-full rounded-xl border border-slate-300 p-3 text-sm tracking-widest"
+          className="w-full rounded-xl border border-stone-300 p-3 text-sm tracking-widest"
         />
         {err && <p className="text-sm text-rose-600">{err}</p>}
         <button
           onClick={save}
           disabled={pending}
-          className="w-full rounded-xl bg-teal-600 py-3 font-semibold text-white disabled:opacity-50"
+          className="w-full rounded-xl bg-amber-600 py-3 font-semibold text-white disabled:opacity-50"
         >
           ＋ {t("addEmployee")}
         </button>
@@ -117,13 +117,13 @@ export default function StaffManager({ staff }: { staff: Staff[] }) {
               }`}
             >
               <div className="min-w-0">
-                <p className="font-semibold text-slate-800">{s.name}</p>
-                <p className="text-xs text-slate-500">{t(ROLE_KEY[s.role] ?? s.role)}</p>
+                <p className="font-semibold text-stone-800">{s.name}</p>
+                <p className="text-xs text-stone-500">{t(ROLE_KEY[s.role] ?? s.role)}</p>
               </div>
               <div className="flex shrink-0 gap-1.5">
                 <button
                   onClick={() => setEditId(s.id)}
-                  className="rounded-lg border border-slate-300 bg-white px-3 py-1.5 text-xs font-semibold text-slate-700"
+                  className="rounded-lg border border-stone-300 bg-white px-3 py-1.5 text-xs font-semibold text-stone-700"
                 >
                   {t("edit")}
                 </button>
@@ -173,18 +173,18 @@ function EditRow({ staff, onDone }: { staff: Staff; onDone: () => void }) {
   }
 
   return (
-    <div className="space-y-3 rounded-2xl bg-white p-4 shadow-sm ring-2 ring-teal-200">
+    <div className="space-y-3 rounded-2xl bg-white p-4 shadow-sm ring-2 ring-amber-200">
       <input
         value={name}
         onChange={(e) => setName(e.target.value)}
         placeholder={t("fieldName")}
-        className="w-full rounded-xl border border-slate-300 p-3 text-sm"
+        className="w-full rounded-xl border border-stone-300 p-3 text-sm"
       />
       <div className="grid grid-cols-2 gap-3">
         <select
           value={role}
           onChange={(e) => setRole(e.target.value)}
-          className="rounded-xl border border-slate-300 bg-white p-3 text-sm"
+          className="rounded-xl border border-stone-300 bg-white p-3 text-sm"
         >
           <option value="cleaner">{t("roleCleaner")}</option>
           <option value="supervisor">{t("roleSupervisor")}</option>
@@ -193,7 +193,7 @@ function EditRow({ staff, onDone }: { staff: Staff; onDone: () => void }) {
         <select
           value={lang}
           onChange={(e) => setLang(e.target.value)}
-          className="rounded-xl border border-slate-300 bg-white p-3 text-sm"
+          className="rounded-xl border border-stone-300 bg-white p-3 text-sm"
         >
           <option value="en">English</option>
           <option value="ta">தமிழ்</option>
@@ -205,21 +205,21 @@ function EditRow({ staff, onDone }: { staff: Staff; onDone: () => void }) {
         onChange={(e) => setPin(e.target.value.replace(/\D/g, "").slice(0, 4))}
         placeholder={t("newPinOptional")}
         inputMode="numeric"
-        className="w-full rounded-xl border border-slate-300 p-3 text-sm tracking-widest"
+        className="w-full rounded-xl border border-stone-300 p-3 text-sm tracking-widest"
       />
-      <p className="text-xs text-slate-400">🔒 {t("pinHiddenNote")}</p>
+      <p className="text-xs text-stone-400">🔒 {t("pinHiddenNote")}</p>
       {err && <p className="text-sm text-rose-600">{err}</p>}
       <div className="flex gap-2">
         <button
           onClick={save}
           disabled={pending}
-          className="flex-1 rounded-xl bg-teal-600 py-3 font-semibold text-white disabled:opacity-50"
+          className="flex-1 rounded-xl bg-amber-600 py-3 font-semibold text-white disabled:opacity-50"
         >
           {t("save")}
         </button>
         <button
           onClick={onDone}
-          className="rounded-xl border border-slate-300 px-4 py-3 text-sm font-medium text-slate-500"
+          className="rounded-xl border border-stone-300 px-4 py-3 text-sm font-medium text-stone-500"
         >
           {t("cancel")}
         </button>

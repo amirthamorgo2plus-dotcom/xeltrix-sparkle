@@ -53,15 +53,15 @@ export default function IssueCard({
               </span>
             )}
             {issue.category && CAT_KEY[issue.category] && (
-              <span className="rounded-full bg-slate-100 px-2 py-0.5 text-[11px] font-medium text-slate-600">
+              <span className="rounded-full bg-stone-100 px-2 py-0.5 text-[11px] font-medium text-stone-600">
                 {t(CAT_KEY[issue.category])}
               </span>
             )}
           </div>
           <p className="font-semibold">{issue.issue}</p>
-          <p className="text-xs text-slate-500">{t("room")} {issue.room_no}</p>
+          <p className="text-xs text-stone-500">{t("room")} {issue.room_no}</p>
           {issue.reported_name && (
-            <p className="mt-0.5 text-xs font-medium text-slate-600">
+            <p className="mt-0.5 text-xs font-medium text-stone-600">
               🧑 {t("reportedBy")}: {issue.reported_name}
             </p>
           )}

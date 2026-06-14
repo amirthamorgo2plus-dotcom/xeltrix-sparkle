@@ -32,7 +32,7 @@ export default function AssignSelect({
       onChange={onChange}
       disabled={pending}
       aria-label={t("assignTo")}
-      className={`rounded-lg border border-slate-200 bg-slate-50 px-2 py-1 text-xs font-medium text-slate-700 ${
+      className={`rounded-lg border border-stone-200 bg-stone-50 px-2 py-1 text-xs font-medium text-stone-700 ${
         pending ? "opacity-50" : ""
       }`}
     >

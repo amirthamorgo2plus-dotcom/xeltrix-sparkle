@@ -56,7 +56,7 @@ export default function PhotoUpload({
 
   return (
     <div>
-      <label className="flex cursor-pointer items-center justify-center gap-2 rounded-xl border-2 border-dashed border-teal-300 bg-teal-50 py-4 font-medium text-teal-700">
+      <label className="flex cursor-pointer items-center justify-center gap-2 rounded-xl border-2 border-dashed border-amber-300 bg-amber-50 py-4 font-medium text-amber-700">
         📷 {busy ? t("saving") : t("addPhotos")}
         <input
           type="file"

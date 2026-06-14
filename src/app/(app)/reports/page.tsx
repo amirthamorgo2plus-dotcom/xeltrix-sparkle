@@ -217,7 +217,7 @@ export default async function ReportsPage({
       </div>
       {scope === "month" ? (
         <div className="mb-6 rounded-2xl bg-white p-3 shadow-sm">
-          <p className="mb-2 text-xs font-medium text-slate-500"><TLabel tkey="presentPerDay" /></p>
+          <p className="mb-2 text-xs font-medium text-stone-500"><TLabel tkey="presentPerDay" /></p>
           <DayBars data={attBars} color="teal" />
         </div>
       ) : presentNames.size === 0 ? (
@@ -227,7 +227,7 @@ export default async function ReportsPage({
           {Array.from(presentNames).map((n) => (
             <span
               key={n}
-              className="rounded-full bg-teal-50 px-3 py-1 text-sm font-medium text-teal-700"
+              className="rounded-full bg-amber-50 px-3 py-1 text-sm font-medium text-amber-700"
             >
               {n}
             </span>
@@ -245,33 +245,33 @@ export default async function ReportsPage({
       </div>
       {avgFixSecs != null && (
         <div className="mb-3 flex items-center justify-between rounded-2xl bg-white px-4 py-3 shadow-sm">
-          <span className="text-sm font-medium text-slate-600">
+          <span className="text-sm font-medium text-stone-600">
             <TLabel tkey="avgFixTime" />
           </span>
-          <span className="text-sm font-bold text-slate-800">{fmtDur(avgFixSecs)}</span>
+          <span className="text-sm font-bold text-stone-800">{fmtDur(avgFixSecs)}</span>
         </div>
       )}
       {issByCat.length > 0 && (
         <div className="mb-3 rounded-2xl bg-white p-3 shadow-sm">
-          <p className="mb-2 text-xs font-medium text-slate-500"><TLabel tkey="byCategory" /></p>
+          <p className="mb-2 text-xs font-medium text-stone-500"><TLabel tkey="byCategory" /></p>
           <BarChart data={issByCat} color="amber" i18nLabel />
         </div>
       )}
       {scope === "month" && issRows.length > 0 && (
         <div className="mb-3 rounded-2xl bg-white p-3 shadow-sm">
-          <p className="mb-2 text-xs font-medium text-slate-500"><TLabel tkey="perDay" /></p>
+          <p className="mb-2 text-xs font-medium text-stone-500"><TLabel tkey="perDay" /></p>
           <DayBars data={issPerDay} color="rose" />
         </div>
       )}
       {issByRoom.length > 0 && (
         <div className="mb-3 rounded-2xl bg-white p-3 shadow-sm">
-          <p className="mb-2 text-xs font-medium text-slate-500"><TLabel tkey="byRoom" /></p>
+          <p className="mb-2 text-xs font-medium text-stone-500"><TLabel tkey="byRoom" /></p>
           <BarChart data={issByRoom} color="rose" />
         </div>
       )}
       {agingRows.length > 0 ? (
         <div className="mb-6 rounded-2xl bg-white p-3 shadow-sm">
-          <p className="mb-2 text-xs font-medium text-slate-500"><TLabel tkey="agingOpen" /></p>
+          <p className="mb-2 text-xs font-medium text-stone-500"><TLabel tkey="agingOpen" /></p>
           <ul className="space-y-2">
             {agingRows.map((a) => {
               const days = Math.floor(
@@ -279,7 +279,7 @@ export default async function ReportsPage({
               );
               return (
                 <li key={a.id} className="flex items-center justify-between gap-2">
-                  <span className="min-w-0 flex-1 truncate text-sm text-slate-700">
+                  <span className="min-w-0 flex-1 truncate text-sm text-stone-700">
                     {a.urgent && <span className="mr-1 text-rose-600">⚠</span>}
                     #{a.room_no} · {a.issue}
                   </span>
@@ -304,8 +304,8 @@ export default async function ReportsPage({
             <p className="text-xs font-semibold uppercase tracking-wide text-amber-700">
               <TLabel tkey="starPerformer" />
             </p>
-            <p className="truncate text-lg font-bold text-slate-800">{star.name}</p>
-            <p className="text-xs text-slate-500">
+            <p className="truncate text-lg font-bold text-stone-800">{star.name}</p>
+            <p className="text-xs text-stone-500">
               {star.cleaned} <TLabel tkey="mRoomsCleaned" /> · {star.redos}{" "}
               <TLabel tkey="mRedos" />
             </p>
@@ -319,7 +319,7 @@ export default async function ReportsPage({
           {perfRows.map((p) => (
             <div key={p.name} className="rounded-2xl bg-white p-4 shadow-sm">
               <div className="mb-2 flex items-center justify-between">
-                <span className="font-semibold text-slate-800">{p.name}</span>
+                <span className="font-semibold text-stone-800">{p.name}</span>
                 {p.rate > 0 && (
                   <span className="rounded-full bg-amber-100 px-2 py-0.5 text-xs font-medium text-amber-700">
                     {p.rate}% <TLabel tkey="mRedoRate" />
@@ -341,9 +341,9 @@ export default async function ReportsPage({
 
 function Metric({ tkey, value }: { tkey: string; value: string }) {
   return (
-    <div className="rounded-xl bg-slate-50 py-2">
-      <p className="text-lg font-bold text-slate-800">{value}</p>
-      <p className="text-[11px] text-slate-500">
+    <div className="rounded-xl bg-stone-50 py-2">
+      <p className="text-lg font-bold text-stone-800">{value}</p>
+      <p className="text-[11px] text-stone-500">
         <TLabel tkey={tkey} />
       </p>
     </div>

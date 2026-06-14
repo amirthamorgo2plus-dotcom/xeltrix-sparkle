@@ -11,7 +11,7 @@ export default function LanguageSwitcher() {
           key={l.code}
           onClick={() => setLang(l.code)}
           className={`rounded-full px-3 py-1 text-sm font-medium transition ${
-            lang === l.code ? "bg-white text-teal-700" : "text-white"
+            lang === l.code ? "bg-white text-amber-700" : "text-white"
           }`}
         >
           {l.label}
