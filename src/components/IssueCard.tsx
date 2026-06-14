@@ -59,9 +59,12 @@ export default function IssueCard({
             )}
           </div>
           <p className="font-semibold">{issue.issue}</p>
-          <p className="text-xs text-slate-500">
-            {t("room")} {issue.room_no} · {issue.reported_name}
-          </p>
+          <p className="text-xs text-slate-500">{t("room")} {issue.room_no}</p>
+          {issue.reported_name && (
+            <p className="mt-0.5 text-xs font-medium text-slate-600">
+              🧑 {t("reportedBy")}: {issue.reported_name}
+            </p>
+          )}
         </div>
         <span
           className={`rounded-full px-2 py-0.5 text-xs font-medium ${

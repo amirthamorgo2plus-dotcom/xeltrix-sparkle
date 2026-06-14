@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { getSession } from "@/lib/session";
 import { supabaseAdmin } from "@/lib/supabase/admin";
 import Heading, { SubHeading } from "@/components/Heading";
 import StatusBadge from "@/components/StatusBadge";
@@ -9,11 +10,13 @@ import AssignSelect from "@/components/AssignSelect";
 import AddRoom from "@/components/AddRoom";
 import VacateButton from "@/components/VacateButton";
 import StarBadge from "@/components/StarBadge";
+import TLabel from "@/components/TLabel";
 import { getCleaners, getStarPerformer } from "@/app/actions/data";
 
 export const dynamic = "force-dynamic";
 
 export default async function DashboardPage() {
+  const session = await getSession();
   const sb = supabaseAdmin();
   const [{ data: rooms }, openIssues, { data: present }, cleaners, star] = await Promise.all([
     sb.from("rooms").select("id, room_no, status, assigned_to").order("room_no"),
@@ -45,7 +48,17 @@ export default async function DashboardPage() {
 
   return (
     <div>
-      <Heading tkey="navDashboard" />
+      <div className="flex items-center justify-between">
+        <Heading tkey="navDashboard" />
+        {session?.role === "owner" && (
+          <Link
+            href="/staff"
+            className="mb-3 rounded-lg border border-slate-300 bg-white px-3 py-1.5 text-sm font-semibold text-slate-700"
+          >
+            👥 <TLabel tkey="manageStaff" />
+          </Link>
+        )}
+      </div>
 
       <div className="mb-5 grid grid-cols-2 gap-3">
         <StatTile value={ready} tkey="roomsReady" color="emerald" />
