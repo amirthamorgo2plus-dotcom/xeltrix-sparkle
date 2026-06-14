@@ -99,6 +99,34 @@ export async function addStaff(input: {
   return { ok: true };
 }
 
+export async function updateStaff(input: {
+  id: string;
+  name: string;
+  role: string;
+  language: string;
+  pin?: string; // optional — only set to reset
+}): Promise<{ ok: boolean; error?: string }> {
+  await requireOwner();
+  const name = input.name.trim();
+  if (!name) return { ok: false, error: "name" };
+  if (!["cleaner", "supervisor", "owner"].includes(input.role))
+    return { ok: false, error: "role" };
+  const lang = ["en", "ta", "hi"].includes(input.language) ? input.language : "en";
+
+  const patch: Record<string, unknown> = { name, role: input.role, language: lang };
+  if (input.pin && input.pin.length > 0) {
+    if (!/^\d{4}$/.test(input.pin)) return { ok: false, error: "pin" };
+    patch.pin_hash = await bcrypt.hash(input.pin, 10);
+  }
+
+  const sb = supabaseAdmin();
+  const { error } = await sb.from("staff").update(patch).eq("id", input.id);
+  if (error) return { ok: false, error: error.message };
+  revalidatePath("/staff");
+  revalidatePath("/dashboard");
+  return { ok: true };
+}
+
 export async function setStaffActive(staffId: string, active: boolean) {
   await requireOwner();
   const sb = supabaseAdmin();
