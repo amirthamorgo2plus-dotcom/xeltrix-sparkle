@@ -3,6 +3,7 @@ import { useRouter } from "next/navigation";
 import { logout } from "@/app/actions/auth";
 import { useI18n } from "@/lib/i18n/I18nProvider";
 import LanguageSwitcher from "./LanguageSwitcher";
+import NotificationBell from "./NotificationBell";
 
 export default function TopBar({ name, role }: { name: string; role: string }) {
   const router = useRouter();
@@ -16,15 +17,18 @@ export default function TopBar({ name, role }: { name: string; role: string }) {
             {name} · {role}
           </p>
         </div>
-        <button
-          onClick={async () => {
-            await logout();
-            router.push("/");
-          }}
-          className="rounded-full bg-white/15 px-3 py-1 text-sm"
-        >
-          {t("logout")}
-        </button>
+        <div className="flex items-center gap-2">
+          <NotificationBell />
+          <button
+            onClick={async () => {
+              await logout();
+              router.push("/");
+            }}
+            className="rounded-full bg-white/15 px-3 py-1 text-sm"
+          >
+            {t("logout")}
+          </button>
+        </div>
       </div>
       <div className="mt-2 flex justify-end">
         <LanguageSwitcher />

@@ -2,6 +2,7 @@
 import { revalidatePath } from "next/cache";
 import { supabaseAdmin } from "@/lib/supabase/admin";
 import { getSession } from "@/lib/session";
+import { sendPush } from "@/lib/push";
 
 async function requireSession() {
   const s = await getSession();
@@ -107,6 +108,15 @@ export async function approveRoom(roomId: string) {
     cleaner_name: who.cleanerName,
     event: "approved",
   });
+  await sendPush(
+    { roles: ["owner"] },
+    {
+      title: "✅ Room ready",
+      body: `Room ${who.roomNo ?? ""} is guest-ready`,
+      url: "/dashboard",
+      tag: "ready",
+    }
+  );
   revalidatePath("/inspect");
   revalidatePath("/dashboard");
 }
@@ -158,6 +168,17 @@ export async function reportIssue(input: {
   });
   if (input.roomId)
     await sb.from("rooms").update({ status: "maintenance" }).eq("id", input.roomId);
+
+  await sendPush(
+    { roles: ["supervisor", "owner"] },
+    {
+      title: input.urgent ? "⚠️ Urgent issue" : "🔧 New issue",
+      body: `Room ${input.roomNo}: ${input.issue}`,
+      url: "/issues",
+      tag: "issue",
+    }
+  );
+
   revalidatePath("/issues");
   revalidatePath("/dashboard");
 }
@@ -255,6 +276,24 @@ export async function assignRoom(roomId: string, staffId: string | null) {
       assigned_at: staffId ? new Date().toISOString() : null,
     })
     .eq("id", roomId);
+
+  if (staffId) {
+    const { data: room } = await sb
+      .from("rooms")
+      .select("room_no")
+      .eq("id", roomId)
+      .single();
+    await sendPush(
+      { staffId },
+      {
+        title: "🛏️ New room assigned",
+        body: `Room ${(room?.room_no as string) ?? ""}`,
+        url: "/rooms",
+        tag: "assigned",
+      }
+    );
+  }
+
   revalidatePath("/dashboard");
   revalidatePath("/rooms");
 }
