@@ -2,7 +2,7 @@ import { notFound } from "next/navigation";
 import { supabaseAdmin } from "@/lib/supabase/admin";
 import { getSession } from "@/lib/session";
 import RoomCleaning from "@/components/RoomCleaning";
-import RoomOverview, { RoomIssue } from "@/components/RoomOverview";
+import RoomOverview, { RoomIssue, RoomEvent } from "@/components/RoomOverview";
 
 export const dynamic = "force-dynamic";
 
@@ -26,11 +26,19 @@ export default async function RoomDetail({
 
   // Owner / supervisor: read-only overview with photos + issues (image + audio).
   if (session && session.role !== "cleaner") {
-    const { data: issues } = await sb
-      .from("maintenance")
-      .select("id, room_no, issue, category, urgent, photo_url, voice_url, reported_name, status")
-      .eq("room_id", id)
-      .order("created_at", { ascending: false });
+    const [{ data: issues }, { data: events }] = await Promise.all([
+      sb
+        .from("maintenance")
+        .select("id, room_no, issue, category, urgent, photo_url, voice_url, reported_name, status")
+        .eq("room_id", id)
+        .order("created_at", { ascending: false }),
+      sb
+        .from("cleaning_events")
+        .select("id, event, cleaner_name, duration_secs, created_at")
+        .eq("room_id", id)
+        .order("created_at", { ascending: false })
+        .limit(20),
+    ]);
 
     return (
       <RoomOverview
@@ -38,6 +46,7 @@ export default async function RoomDetail({
         status={room.status as string}
         photos={photoUrls}
         issues={(issues ?? []) as RoomIssue[]}
+        history={(events ?? []) as RoomEvent[]}
         canFix={true}
         backHref={session.role === "owner" ? "/dashboard" : "/inspect"}
       />
