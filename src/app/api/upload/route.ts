@@ -26,6 +26,13 @@ export async function POST(req: NextRequest) {
   });
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
 
+  // Tally storage usage for the org (best-effort, atomic via RPC).
+  try {
+    await sb.rpc("add_org_storage", { p_org: session.orgId, p_bytes: buf.length });
+  } catch {
+    // ignore — usage accounting must not block uploads
+  }
+
   const { data } = sb.storage.from(bucket).getPublicUrl(path);
   return NextResponse.json({ url: data.publicUrl });
 }

@@ -60,12 +60,20 @@ export default async function DashboardPage() {
       <div className="flex items-center justify-between">
         <Heading tkey="navDashboard" />
         {session?.role === "owner" && (
-          <Link
-            href="/staff"
-            className="mb-3 rounded-lg border border-stone-300 bg-white px-3 py-1.5 text-sm font-semibold text-stone-700"
-          >
-            👥 <TLabel tkey="manageStaff" />
-          </Link>
+          <div className="mb-3 flex gap-2">
+            <Link
+              href="/feedback"
+              className="rounded-lg border border-stone-300 bg-white px-3 py-1.5 text-sm font-semibold text-stone-700"
+            >
+              💬
+            </Link>
+            <Link
+              href="/staff"
+              className="rounded-lg border border-stone-300 bg-white px-3 py-1.5 text-sm font-semibold text-stone-700"
+            >
+              👥 <TLabel tkey="manageStaff" />
+            </Link>
+          </div>
         )}
       </div>
 

@@ -208,6 +208,24 @@ export async function markFixed(issueId: string) {
   revalidatePath("/issues");
 }
 
+// ---------- APP FEEDBACK / COMPLAINTS ----------
+export async function submitFeedback(
+  message: string
+): Promise<{ ok: boolean; error?: string }> {
+  const s = await requireSession();
+  const text = message.trim();
+  if (!text) return { ok: false, error: "empty" };
+  const sb = supabaseAdmin();
+  const { error } = await sb.from("app_feedback").insert({
+    org_id: s.orgId,
+    staff_id: s.id,
+    staff_name: s.name,
+    message: text,
+  });
+  if (error) return { ok: false, error: error.message };
+  return { ok: true };
+}
+
 // ---------- ATTENDANCE ----------
 export async function checkIn() {
   const s = await requireSession();

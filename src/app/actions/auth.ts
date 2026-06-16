@@ -53,6 +53,11 @@ export async function login(
     orgSlug: org?.slug ?? "",
   };
   await setSession(s);
+  // Track last activity per hotel (for the super-admin dashboard).
+  await sb
+    .from("orgs")
+    .update({ last_login_at: new Date().toISOString() })
+    .eq("id", s.orgId);
   return { ok: true, role: s.role };
 }
 
@@ -205,4 +210,83 @@ export async function createOrg(input: {
   if (staffErr) return { ok: false, error: staffErr.message };
 
   return { ok: true, slug };
+}
+
+export type AdminHotel = {
+  id: string;
+  name: string;
+  slug: string;
+  createdAt: string;
+  lastLoginAt: string | null;
+  storageBytes: number;
+  members: number;
+};
+export type AdminFeedback = {
+  id: string;
+  orgName: string;
+  staffName: string | null;
+  message: string;
+  resolved: boolean;
+  createdAt: string;
+};
+
+function checkAdmin(key: string): boolean {
+  const expected = process.env.ADMIN_KEY;
+  return !!expected && key === expected;
+}
+
+// Super-admin dashboard data (gated by the admin key, no session needed).
+export async function getAdminData(adminKey: string): Promise<{
+  ok: boolean;
+  hotels?: AdminHotel[];
+  feedback?: AdminFeedback[];
+}> {
+  if (!checkAdmin(adminKey)) return { ok: false };
+  const sb = supabaseAdmin();
+
+  const [{ data: orgs }, { data: staff }, { data: fb }] = await Promise.all([
+    sb.from("orgs").select("id, name, slug, created_at, last_login_at, storage_bytes"),
+    sb.from("staff").select("org_id").eq("active", true),
+    sb
+      .from("app_feedback")
+      .select("id, message, resolved, staff_name, created_at, orgs(name)")
+      .order("created_at", { ascending: false })
+      .limit(100),
+  ]);
+
+  const counts = new Map<string, number>();
+  for (const s of (staff ?? []) as { org_id: string }[])
+    counts.set(s.org_id, (counts.get(s.org_id) ?? 0) + 1);
+
+  const hotels: AdminHotel[] = ((orgs ?? []) as Record<string, unknown>[])
+    .map((o) => ({
+      id: o.id as string,
+      name: o.name as string,
+      slug: o.slug as string,
+      createdAt: o.created_at as string,
+      lastLoginAt: (o.last_login_at as string) ?? null,
+      storageBytes: Number(o.storage_bytes ?? 0),
+      members: counts.get(o.id as string) ?? 0,
+    }))
+    .sort((a, b) => (b.lastLoginAt ?? "").localeCompare(a.lastLoginAt ?? ""));
+
+  const feedback: AdminFeedback[] = ((fb ?? []) as Record<string, unknown>[]).map(
+    (f) => ({
+      id: f.id as string,
+      orgName: (f.orgs as { name?: string } | null)?.name ?? "—",
+      staffName: (f.staff_name as string) ?? null,
+      message: f.message as string,
+      resolved: !!f.resolved,
+      createdAt: f.created_at as string,
+    })
+  );
+
+  return { ok: true, hotels, feedback };
+}
+
+export async function resolveFeedback(adminKey: string, id: string) {
+  if (!checkAdmin(adminKey)) return { ok: false };
+  const sb = supabaseAdmin();
+  await sb.from("app_feedback").update({ resolved: true }).eq("id", id);
+  return { ok: true };
 }
