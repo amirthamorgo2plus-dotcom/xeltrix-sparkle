@@ -2,7 +2,15 @@
 import bcrypt from "bcryptjs";
 import { revalidatePath } from "next/cache";
 import { supabaseAdmin } from "@/lib/supabase/admin";
-import { setSession, clearSession, getSession, type Session } from "@/lib/session";
+import {
+  setSession,
+  clearSession,
+  getSession,
+  setAdminCookie,
+  clearAdminCookie,
+  isAdmin,
+  type Session,
+} from "@/lib/session";
 
 // Look up an org by its slug (for the per-hotel login page).
 export async function getOrgBySlug(slug: string) {
@@ -166,15 +174,12 @@ export async function setStaffActive(staffId: string, active: boolean) {
 
 // ---------- SUPER ADMIN: PROVISION A NEW HOTEL ----------
 export async function createOrg(input: {
-  adminKey: string;
   orgName: string;
   slug: string;
   ownerName: string;
   ownerPin: string;
 }): Promise<{ ok: boolean; error?: string; slug?: string }> {
-  const expected = process.env.ADMIN_KEY;
-  if (!expected || input.adminKey !== expected)
-    return { ok: false, error: "auth" };
+  if (!(await isAdmin())) return { ok: false, error: "auth" };
 
   const orgName = input.orgName.trim();
   const slug = input.slug.trim().toLowerCase();
@@ -235,13 +240,24 @@ function checkAdmin(key: string): boolean {
   return !!expected && key === expected;
 }
 
-// Super-admin dashboard data (gated by the admin key, no session needed).
-export async function getAdminData(adminKey: string): Promise<{
+// Verify the admin key once and set a signed admin cookie.
+export async function adminLogin(key: string): Promise<{ ok: boolean }> {
+  if (!checkAdmin(key)) return { ok: false };
+  await setAdminCookie();
+  return { ok: true };
+}
+
+export async function adminLogout() {
+  await clearAdminCookie();
+}
+
+// Super-admin dashboard data (gated by the admin cookie).
+export async function getAdminData(): Promise<{
   ok: boolean;
   hotels?: AdminHotel[];
   feedback?: AdminFeedback[];
 }> {
-  if (!checkAdmin(adminKey)) return { ok: false };
+  if (!(await isAdmin())) return { ok: false };
   const sb = supabaseAdmin();
 
   const [{ data: orgs }, { data: staff }, { data: fb }] = await Promise.all([
@@ -284,8 +300,8 @@ export async function getAdminData(adminKey: string): Promise<{
   return { ok: true, hotels, feedback };
 }
 
-export async function resolveFeedback(adminKey: string, id: string) {
-  if (!checkAdmin(adminKey)) return { ok: false };
+export async function resolveFeedback(id: string) {
+  if (!(await isAdmin())) return { ok: false };
   const sb = supabaseAdmin();
   await sb.from("app_feedback").update({ resolved: true }).eq("id", id);
   return { ok: true };

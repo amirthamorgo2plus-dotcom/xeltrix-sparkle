@@ -62,3 +62,29 @@ export async function getSession(): Promise<Session | null> {
   const jar = await cookies();
   return decodeSession(jar.get(COOKIE)?.value);
 }
+
+// ---------- Super-admin cookie (separate from staff sessions) ----------
+const ADMIN_COOKIE = "xs_admin";
+const adminToken = () => sign("super-admin");
+
+export async function setAdminCookie() {
+  const jar = await cookies();
+  jar.set(ADMIN_COOKIE, adminToken(), {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: "lax",
+    path: "/",
+    maxAge: MAX_AGE,
+  });
+}
+
+export async function clearAdminCookie() {
+  const jar = await cookies();
+  jar.delete(ADMIN_COOKIE);
+}
+
+export async function isAdmin(): Promise<boolean> {
+  const jar = await cookies();
+  const v = jar.get(ADMIN_COOKIE)?.value;
+  return !!v && v === adminToken();
+}

@@ -1,7 +1,9 @@
 "use client";
-import { useState, useTransition } from "react";
+import { useEffect, useState, useTransition } from "react";
 import {
   getAdminData,
+  adminLogin,
+  adminLogout,
   createOrg,
   resolveFeedback,
   type AdminHotel,
@@ -26,22 +28,47 @@ export default function AdminConsole() {
   const [hotels, setHotels] = useState<AdminHotel[]>([]);
   const [feedback, setFeedback] = useState<AdminFeedback[]>([]);
   const [err, setErr] = useState<string | null>(null);
+  const [checking, setChecking] = useState(true);
   const [pending, startTransition] = useTransition();
 
-  async function load(k: string) {
-    const res = await getAdminData(k);
+  async function load(): Promise<boolean> {
+    const res = await getAdminData();
     if (res.ok) {
       setUnlocked(true);
       setHotels(res.hotels ?? []);
       setFeedback(res.feedback ?? []);
       setErr(null);
-    } else {
-      setErr("Wrong admin key");
+      return true;
     }
+    return false;
   }
 
+  // Already logged in? (admin cookie present) → skip the prompt.
+  useEffect(() => {
+    load().finally(() => setChecking(false));
+  }, []);
+
   function unlock() {
-    startTransition(() => load(key));
+    startTransition(async () => {
+      const res = await adminLogin(key);
+      if (res.ok) {
+        setKey("");
+        await load();
+      } else {
+        setErr("Wrong admin key");
+      }
+    });
+  }
+
+  function logout() {
+    startTransition(async () => {
+      await adminLogout();
+      setUnlocked(false);
+    });
+  }
+
+  if (checking) {
+    return <div className="p-6 text-sm text-stone-400">Loading…</div>;
   }
 
   if (!unlocked) {
@@ -74,7 +101,15 @@ export default function AdminConsole() {
 
   return (
     <div className="mx-auto max-w-md space-y-6 p-5">
-      <h1 className="text-2xl font-bold text-stone-800">Admin console</h1>
+      <div className="flex items-center justify-between">
+        <h1 className="text-2xl font-bold text-stone-800">Admin console</h1>
+        <button
+          onClick={logout}
+          className="rounded-lg border border-stone-300 bg-white px-3 py-1.5 text-sm font-medium text-stone-600"
+        >
+          Log out
+        </button>
+      </div>
 
       {/* Summary */}
       <div className="grid grid-cols-3 gap-2">
@@ -135,8 +170,8 @@ export default function AdminConsole() {
                   <button
                     onClick={() =>
                       startTransition(async () => {
-                        await resolveFeedback(key, f.id);
-                        await load(key);
+                        await resolveFeedback(f.id);
+                        await load();
                       })
                     }
                     className="shrink-0 rounded-lg border border-emerald-300 bg-emerald-50 px-2 py-1 text-xs font-semibold text-emerald-700"
@@ -154,7 +189,7 @@ export default function AdminConsole() {
       </section>
 
       {/* Provision */}
-      <ProvisionForm adminKey={key} onCreated={() => load(key)} />
+      <ProvisionForm onCreated={() => load()} />
     </div>
   );
 }
@@ -183,13 +218,7 @@ function timeAgo(d: string): string {
   return `${Math.floor(h / 24)}d ago`;
 }
 
-function ProvisionForm({
-  adminKey,
-  onCreated,
-}: {
-  adminKey: string;
-  onCreated: () => void;
-}) {
+function ProvisionForm({ onCreated }: { onCreated: () => void }) {
   const [orgName, setOrgName] = useState("");
   const [slug, setSlug] = useState("");
   const [ownerName, setOwnerName] = useState("");
@@ -211,7 +240,7 @@ function ProvisionForm({
     setErr(null);
     setResult(null);
     startTransition(async () => {
-      const res = await createOrg({ adminKey, orgName, slug, ownerName, ownerPin });
+      const res = await createOrg({ orgName, slug, ownerName, ownerPin });
       if (res.ok && res.slug) {
         setResult(`${origin}/h/${res.slug}`);
         setOrgName("");
