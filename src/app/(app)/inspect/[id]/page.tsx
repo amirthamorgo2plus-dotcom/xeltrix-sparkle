@@ -1,5 +1,6 @@
 import { notFound } from "next/navigation";
 import { supabaseAdmin } from "@/lib/supabase/admin";
+import { getSession } from "@/lib/session";
 import InspectActions from "@/components/InspectActions";
 
 export const dynamic = "force-dynamic";
@@ -10,8 +11,14 @@ export default async function InspectDetail({
   params: Promise<{ id: string }>;
 }) {
   const { id } = await params;
+  const session = await getSession();
   const sb = supabaseAdmin();
-  const { data: room } = await sb.from("rooms").select("*").eq("id", id).single();
+  const { data: room } = await sb
+    .from("rooms")
+    .select("*")
+    .eq("id", id)
+    .eq("org_id", session!.orgId)
+    .single();
   if (!room) notFound();
   const { data: photos } = await sb
     .from("room_photos")
@@ -21,6 +28,7 @@ export default async function InspectDetail({
   const { count: openIssues } = await sb
     .from("maintenance")
     .select("*", { count: "exact", head: true })
+    .eq("org_id", session!.orgId)
     .eq("room_id", id)
     .eq("status", "open");
 

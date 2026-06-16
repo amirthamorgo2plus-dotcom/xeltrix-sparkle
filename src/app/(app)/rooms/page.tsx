@@ -14,6 +14,7 @@ export default async function RoomsPage() {
   const { data: rooms } = await sb
     .from("rooms")
     .select("id, room_no, status, check_in_time")
+    .eq("org_id", session!.orgId)
     .eq("assigned_to", session!.id)
     .neq("status", "ready")
     .order("room_no");

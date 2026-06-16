@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { redirect } from "next/navigation";
 import { getSession } from "@/lib/session";
 import { supabaseAdmin } from "@/lib/supabase/admin";
 import Heading, { SubHeading } from "@/components/Heading";
@@ -17,16 +18,24 @@ export const dynamic = "force-dynamic";
 
 export default async function DashboardPage() {
   const session = await getSession();
+  if (!session) redirect("/");
+  const orgId = session.orgId;
   const sb = supabaseAdmin();
   const [{ data: rooms }, openIssues, { data: present }, cleaners, star] = await Promise.all([
-    sb.from("rooms").select("id, room_no, status, assigned_to").order("room_no"),
+    sb
+      .from("rooms")
+      .select("id, room_no, status, assigned_to")
+      .eq("org_id", orgId)
+      .order("room_no"),
     sb
       .from("maintenance")
       .select("*", { count: "exact", head: true })
+      .eq("org_id", orgId)
       .eq("status", "open"),
     sb
       .from("attendance")
       .select("id, staff_name, check_in")
+      .eq("org_id", orgId)
       .gte("check_in", new Date(new Date().toDateString()).toISOString())
       .order("check_in", { ascending: true }),
     getCleaners(),

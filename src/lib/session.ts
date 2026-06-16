@@ -10,6 +10,8 @@ export type Session = {
   name: string;
   role: "cleaner" | "supervisor" | "owner";
   lang: "en" | "ta" | "hi";
+  orgId: string;
+  orgSlug: string;
 };
 
 function secret() {
@@ -31,7 +33,10 @@ export function decodeSession(token?: string | null): Session | null {
   if (!body || !sig) return null;
   if (sign(body) !== sig) return null;
   try {
-    return JSON.parse(Buffer.from(body, "base64url").toString()) as Session;
+    const s = JSON.parse(Buffer.from(body, "base64url").toString()) as Session;
+    // Pre-multi-org cookies lack orgId — force a clean re-login.
+    if (!s.orgId) return null;
+    return s;
   } catch {
     return null;
   }

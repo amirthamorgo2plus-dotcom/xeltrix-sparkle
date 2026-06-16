@@ -19,15 +19,19 @@ function ensureConfigured(): boolean {
 }
 
 type Payload = { title: string; body: string; url?: string; tag?: string };
-type Target = { roles?: string[]; staffId?: string };
+type Target = { orgId: string; roles?: string[]; staffId?: string };
 
-// Fire-and-forget push to staff by role(s) and/or a specific staff id.
-// Never throws — push must not break the core action.
+// Fire-and-forget push to staff by role(s) and/or a specific staff id,
+// always scoped to one org. Never throws — push must not break the action.
 export async function sendPush(target: Target, payload: Payload) {
   try {
     if (!ensureConfigured()) return;
+    if (!target.orgId) return;
     const sb = supabaseAdmin();
-    let q = sb.from("push_subscriptions").select("id, endpoint, p256dh, auth");
+    let q = sb
+      .from("push_subscriptions")
+      .select("id, endpoint, p256dh, auth")
+      .eq("org_id", target.orgId);
     if (target.staffId) {
       q = q.eq("staff_id", target.staffId);
     } else if (target.roles && target.roles.length) {

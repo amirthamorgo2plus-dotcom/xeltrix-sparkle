@@ -42,16 +42,24 @@ export async function GET(req: NextRequest) {
   const endISO = end.toISOString();
 
   const sb = supabaseAdmin();
+  const orgId = session.orgId;
   const [att, iss, ev] = await Promise.all([
-    sb.from("attendance").select("staff_name, check_in").gte("check_in", startISO).lt("check_in", endISO),
+    sb
+      .from("attendance")
+      .select("staff_name, check_in")
+      .eq("org_id", orgId)
+      .gte("check_in", startISO)
+      .lt("check_in", endISO),
     sb
       .from("maintenance")
       .select("room_no, issue, category, urgent, status, created_at, fixed_at")
+      .eq("org_id", orgId)
       .gte("created_at", startISO)
       .lt("created_at", endISO),
     sb
       .from("cleaning_events")
       .select("cleaner_name, event, duration_secs")
+      .eq("org_id", orgId)
       .gte("created_at", startISO)
       .lt("created_at", endISO),
   ]);

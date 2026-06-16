@@ -7,7 +7,13 @@ import LanguageSwitcher from "./LanguageSwitcher";
 
 type Staff = { id: string; name: string; role: string };
 
-export default function LoginForm({ staff }: { staff: Staff[] }) {
+export default function LoginForm({
+  staff,
+  orgName,
+}: {
+  staff: Staff[];
+  orgName?: string;
+}) {
   const { t } = useI18n();
   const router = useRouter();
   const [picked, setPicked] = useState<Staff | null>(null);
@@ -44,8 +50,10 @@ export default function LoginForm({ staff }: { staff: Staff[] }) {
         <div className="mx-auto mb-3 flex h-16 w-16 items-center justify-center rounded-2xl bg-white/15 text-3xl">
           ✨
         </div>
-        <h1 className="text-2xl font-bold">{t("appName")}</h1>
-        <p className="text-sm text-amber-100">{t("tagline")}</p>
+        <h1 className="text-2xl font-bold">{orgName || t("appName")}</h1>
+        <p className="text-sm text-amber-100">
+          {orgName ? t("appName") : t("tagline")}
+        </p>
       </div>
 
       {!picked ? (

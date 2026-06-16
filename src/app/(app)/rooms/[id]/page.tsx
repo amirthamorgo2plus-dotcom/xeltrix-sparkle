@@ -13,8 +13,14 @@ export default async function RoomDetail({
 }) {
   const { id } = await params;
   const session = await getSession();
+  if (!session) notFound();
   const sb = supabaseAdmin();
-  const { data: room } = await sb.from("rooms").select("*").eq("id", id).single();
+  const { data: room } = await sb
+    .from("rooms")
+    .select("*")
+    .eq("id", id)
+    .eq("org_id", session.orgId)
+    .single();
   if (!room) notFound();
   const { data: photos } = await sb
     .from("room_photos")
@@ -25,16 +31,18 @@ export default async function RoomDetail({
   const photoUrls = (photos ?? []).map((p) => p.url as string);
 
   // Owner / supervisor: read-only overview with photos + issues (image + audio).
-  if (session && session.role !== "cleaner") {
+  if (session.role !== "cleaner") {
     const [{ data: issues }, { data: events }] = await Promise.all([
       sb
         .from("maintenance")
         .select("id, room_no, issue, category, urgent, photo_url, voice_url, reported_name, status")
+        .eq("org_id", session.orgId)
         .eq("room_id", id)
         .order("created_at", { ascending: false }),
       sb
         .from("cleaning_events")
         .select("id, event, cleaner_name, duration_secs, created_at")
+        .eq("org_id", session.orgId)
         .eq("room_id", id)
         .order("created_at", { ascending: false })
         .limit(20),

@@ -16,6 +16,7 @@ export default async function CheckinPage() {
     sb
       .from("attendance")
       .select("id, check_in")
+      .eq("org_id", session!.orgId)
       .eq("staff_id", session!.id)
       .order("check_in", { ascending: false })
       .limit(10),
@@ -23,6 +24,7 @@ export default async function CheckinPage() {
       ? sb
           .from("attendance")
           .select("staff_name, check_in")
+          .eq("org_id", session!.orgId)
           .gte("check_in", new Date(new Date().toDateString()).toISOString())
           .order("check_in", { ascending: true })
       : Promise.resolve({ data: [] as { staff_name: string; check_in: string }[] }),

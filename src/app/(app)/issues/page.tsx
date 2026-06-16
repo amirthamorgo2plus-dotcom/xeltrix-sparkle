@@ -13,6 +13,7 @@ export default async function IssuesPage() {
   const { data: issues } = await sb
     .from("maintenance")
     .select("id, room_no, issue, category, urgent, photo_url, voice_url, reported_name, status, created_at")
+    .eq("org_id", session!.orgId)
     .order("status", { ascending: true })
     .order("urgent", { ascending: false })
     .order("created_at", { ascending: false });

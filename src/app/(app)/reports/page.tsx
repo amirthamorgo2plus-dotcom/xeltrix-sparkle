@@ -52,22 +52,26 @@ export default async function ReportsPage({
     sb
       .from("attendance")
       .select("staff_name, check_in")
+      .eq("org_id", session.orgId)
       .gte("check_in", startISO)
       .lt("check_in", endISO),
     sb
       .from("maintenance")
       .select("room_no, status, category, urgent, created_at, fixed_at")
+      .eq("org_id", session.orgId)
       .gte("created_at", startISO)
       .lt("created_at", endISO),
     sb
       .from("cleaning_events")
       .select("cleaner_name, event, duration_secs, created_at")
+      .eq("org_id", session.orgId)
       .gte("created_at", startISO)
       .lt("created_at", endISO),
     // Oldest still-open issues (not period-bound — a live action list).
     sb
       .from("maintenance")
       .select("id, room_no, issue, urgent, created_at")
+      .eq("org_id", session.orgId)
       .eq("status", "open")
       .order("created_at", { ascending: true })
       .limit(5),

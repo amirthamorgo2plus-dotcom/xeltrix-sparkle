@@ -18,7 +18,14 @@ export async function POST(req: NextRequest) {
   await sb
     .from("push_subscriptions")
     .upsert(
-      { endpoint, p256dh, auth, staff_id: session.id, role: session.role },
+      {
+        endpoint,
+        p256dh,
+        auth,
+        staff_id: session.id,
+        role: session.role,
+        org_id: session.orgId,
+      },
       { onConflict: "endpoint" }
     );
   return NextResponse.json({ ok: true });

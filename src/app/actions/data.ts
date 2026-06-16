@@ -23,6 +23,7 @@ export async function markCleaned(
     .from("rooms")
     .select("room_no, assigned_at")
     .eq("id", roomId)
+    .eq("org_id", s.orgId)
     .single();
   const now = new Date();
   const durationSecs = room?.assigned_at
@@ -40,9 +41,11 @@ export async function markCleaned(
       ac_ok: checklist.ac,
       last_cleaned: now.toISOString(),
     })
-    .eq("id", roomId);
+    .eq("id", roomId)
+    .eq("org_id", s.orgId);
 
   await sb.from("cleaning_events").insert({
+    org_id: s.orgId,
     room_id: roomId,
     room_no: (room?.room_no as string) ?? null,
     cleaner_id: s.id,
@@ -64,12 +67,13 @@ export async function addRoomPhoto(roomId: string, url: string) {
 
 // ---------- SUPERVISOR ----------
 // Look up the cleaner currently assigned to a room (for event attribution).
-async function assignedCleaner(roomId: string) {
+async function assignedCleaner(roomId: string, orgId: string) {
   const sb = supabaseAdmin();
   const { data: room } = await sb
     .from("rooms")
     .select("room_no, assigned_to")
     .eq("id", roomId)
+    .eq("org_id", orgId)
     .single();
   let name: string | null = null;
   if (room?.assigned_to) {
@@ -95,13 +99,15 @@ export async function approveRoom(roomId: string) {
   const { count } = await sb
     .from("maintenance")
     .select("*", { count: "exact", head: true })
+    .eq("org_id", s.orgId)
     .eq("room_id", roomId)
     .eq("status", "open");
   if ((count ?? 0) > 0) throw new Error("Open maintenance — cannot approve");
 
-  const who = await assignedCleaner(roomId);
-  await sb.from("rooms").update({ status: "ready" }).eq("id", roomId);
+  const who = await assignedCleaner(roomId, s.orgId);
+  await sb.from("rooms").update({ status: "ready" }).eq("id", roomId).eq("org_id", s.orgId);
   await sb.from("cleaning_events").insert({
+    org_id: s.orgId,
     room_id: roomId,
     room_no: who.roomNo,
     cleaner_id: who.cleanerId,
@@ -109,7 +115,7 @@ export async function approveRoom(roomId: string) {
     event: "approved",
   });
   await sendPush(
-    { roles: ["owner"] },
+    { orgId: s.orgId, roles: ["owner"] },
     {
       title: "✅ Room ready",
       body: `Room ${who.roomNo ?? ""} is guest-ready`,
@@ -126,13 +132,15 @@ export async function redoRoom(roomId: string) {
   if (s.role === "cleaner") throw new Error("Not allowed");
   const sb = supabaseAdmin();
 
-  const who = await assignedCleaner(roomId);
+  const who = await assignedCleaner(roomId, s.orgId);
   // Reset the clock so the re-clean is timed from now.
   await sb
     .from("rooms")
     .update({ status: "cleaning", assigned_at: new Date().toISOString() })
-    .eq("id", roomId);
+    .eq("id", roomId)
+    .eq("org_id", s.orgId);
   await sb.from("cleaning_events").insert({
+    org_id: s.orgId,
     room_id: roomId,
     room_no: who.roomNo,
     cleaner_id: who.cleanerId,
@@ -155,6 +163,7 @@ export async function reportIssue(input: {
   const s = await requireSession();
   const sb = supabaseAdmin();
   await sb.from("maintenance").insert({
+    org_id: s.orgId,
     room_id: input.roomId,
     room_no: input.roomNo,
     issue: input.issue,
@@ -167,10 +176,14 @@ export async function reportIssue(input: {
     status: "open",
   });
   if (input.roomId)
-    await sb.from("rooms").update({ status: "maintenance" }).eq("id", input.roomId);
+    await sb
+      .from("rooms")
+      .update({ status: "maintenance" })
+      .eq("id", input.roomId)
+      .eq("org_id", s.orgId);
 
   await sendPush(
-    { roles: ["supervisor", "owner"] },
+    { orgId: s.orgId, roles: ["supervisor", "owner"] },
     {
       title: input.urgent ? "⚠️ Urgent issue" : "🔧 New issue",
       body: `Room ${input.roomNo}: ${input.issue}`,
@@ -190,7 +203,8 @@ export async function markFixed(issueId: string) {
   await sb
     .from("maintenance")
     .update({ status: "fixed", fixed_at: new Date().toISOString() })
-    .eq("id", issueId);
+    .eq("id", issueId)
+    .eq("org_id", s.orgId);
   revalidatePath("/issues");
 }
 
@@ -198,7 +212,9 @@ export async function markFixed(issueId: string) {
 export async function checkIn() {
   const s = await requireSession();
   const sb = supabaseAdmin();
-  await sb.from("attendance").insert({ staff_id: s.id, staff_name: s.name, status: "present" });
+  await sb
+    .from("attendance")
+    .insert({ org_id: s.orgId, staff_id: s.id, staff_name: s.name, status: "present" });
   revalidatePath("/checkin");
   revalidatePath("/dashboard");
 }
@@ -216,11 +232,14 @@ export async function addRoom(
   const { data: existing } = await sb
     .from("rooms")
     .select("id")
+    .eq("org_id", s.orgId)
     .eq("room_no", no)
     .maybeSingle();
   if (existing) return { ok: false, error: "exists" };
 
-  const { error } = await sb.from("rooms").insert({ room_no: no, status: "ready" });
+  const { error } = await sb
+    .from("rooms")
+    .insert({ room_no: no, status: "ready", org_id: s.orgId });
   if (error) return { ok: false, error: error.message };
   revalidatePath("/dashboard");
   return { ok: true };
@@ -245,7 +264,8 @@ export async function markVacated(roomId: string) {
       assigned_at: null,
       last_cleaned: null,
     })
-    .eq("id", roomId);
+    .eq("id", roomId)
+    .eq("org_id", s.orgId);
   revalidatePath("/dashboard");
   revalidatePath("/rooms");
   revalidatePath("/inspect");
@@ -259,6 +279,7 @@ export async function getCleaners() {
   const { data } = await sb
     .from("staff")
     .select("id, name")
+    .eq("org_id", s.orgId)
     .eq("role", "cleaner")
     .eq("active", true)
     .order("name");
@@ -275,16 +296,18 @@ export async function assignRoom(roomId: string, staffId: string | null) {
       assigned_to: staffId,
       assigned_at: staffId ? new Date().toISOString() : null,
     })
-    .eq("id", roomId);
+    .eq("id", roomId)
+    .eq("org_id", s.orgId);
 
   if (staffId) {
     const { data: room } = await sb
       .from("rooms")
       .select("room_no")
       .eq("id", roomId)
+      .eq("org_id", s.orgId)
       .single();
     await sendPush(
-      { staffId },
+      { orgId: s.orgId, staffId },
       {
         title: "🛏️ New room assigned",
         body: `Room ${(room?.room_no as string) ?? ""}`,
@@ -315,6 +338,7 @@ export async function getStarPerformer(): Promise<
   const { data } = await sb
     .from("cleaning_events")
     .select("cleaner_name, event")
+    .eq("org_id", s.orgId)
     .gte("created_at", start);
 
   const agg = new Map<string, { cleaned: number; redos: number }>();
