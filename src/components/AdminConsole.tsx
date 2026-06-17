@@ -124,12 +124,36 @@ export default function AdminConsole() {
         <div className="space-y-2">
           {hotels.map((h) => (
             <div key={h.id} className="rounded-2xl bg-white p-4 shadow-sm">
-              <div className="flex items-center justify-between">
-                <p className="font-semibold text-stone-800">{h.name}</p>
-                <span className="rounded-full bg-stone-100 px-2 py-0.5 font-mono text-xs text-stone-600">
+              <div className="flex items-center justify-between gap-2">
+                <div className="flex min-w-0 items-center gap-2">
+                  {h.logoUrl ? (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img
+                      src={h.logoUrl}
+                      alt=""
+                      className="h-9 w-9 shrink-0 rounded-lg object-cover"
+                    />
+                  ) : (
+                    <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-amber-100 text-sm font-bold text-amber-700">
+                      {h.name.charAt(0).toUpperCase()}
+                    </span>
+                  )}
+                  <p className="truncate font-semibold text-stone-800">{h.name}</p>
+                </div>
+                <span className="shrink-0 rounded-full bg-stone-100 px-2 py-0.5 font-mono text-xs text-stone-600">
                   /h/{h.slug}
                 </span>
               </div>
+              {(h.address || (h.lat != null && h.lng != null)) && (
+                <a
+                  href={mapsUrl(h)!}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="mt-2 inline-block text-xs font-medium text-amber-700"
+                >
+                  📍 {h.address || "Directions"} ↗
+                </a>
+              )}
               <div className="mt-2 grid grid-cols-3 gap-2 text-center text-xs">
                 <Mini label="Members" value={String(h.members)} />
                 <Mini label="Storage" value={fmtBytes(h.storageBytes)} />
@@ -210,6 +234,10 @@ function Mini({ label, value }: { label: string; value: string }) {
     </div>
   );
 }
+function mapsUrl(h: AdminHotel): string | null {
+  const q = h.lat != null && h.lng != null ? `${h.lat},${h.lng}` : h.address;
+  return q ? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(q)}` : null;
+}
 function timeAgo(d: string): string {
   const diff = Date.now() - new Date(d).getTime();
   const h = Math.floor(diff / 3600000);
@@ -223,9 +251,26 @@ function ProvisionForm({ onCreated }: { onCreated: () => void }) {
   const [slug, setSlug] = useState("");
   const [ownerName, setOwnerName] = useState("");
   const [ownerPin, setOwnerPin] = useState("");
+  const [address, setAddress] = useState("");
+  const [logoUrl, setLogoUrl] = useState<string | null>(null);
+  const [uploading, setUploading] = useState(false);
   const [result, setResult] = useState<string | null>(null);
   const [err, setErr] = useState<string | null>(null);
   const [pending, startTransition] = useTransition();
+
+  async function uploadLogo(file: File | null) {
+    if (!file) return;
+    setUploading(true);
+    try {
+      const fd = new FormData();
+      fd.append("file", file);
+      const res = await fetch("/api/admin/upload", { method: "POST", body: fd });
+      const json = await res.json().catch(() => ({}));
+      if (res.ok && json.url) setLogoUrl(json.url);
+    } finally {
+      setUploading(false);
+    }
+  }
 
   const ERRORS: Record<string, string> = {
     auth: "Wrong admin key",
@@ -240,13 +285,15 @@ function ProvisionForm({ onCreated }: { onCreated: () => void }) {
     setErr(null);
     setResult(null);
     startTransition(async () => {
-      const res = await createOrg({ orgName, slug, ownerName, ownerPin });
+      const res = await createOrg({ orgName, slug, ownerName, ownerPin, logoUrl, address });
       if (res.ok && res.slug) {
         setResult(`${origin}/h/${res.slug}`);
         setOrgName("");
         setSlug("");
         setOwnerName("");
         setOwnerPin("");
+        setAddress("");
+        setLogoUrl(null);
         onCreated();
       } else {
         setErr(ERRORS[res.error ?? ""] ?? "Could not create hotel");
@@ -268,6 +315,17 @@ function ProvisionForm({ onCreated }: { onCreated: () => void }) {
         <input value={slug} onChange={(e) => setSlug(e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, ""))} placeholder="Hotel code (e.g. grandpalace)" autoCapitalize="none" className="w-full rounded-xl border border-stone-300 p-2.5 text-sm" />
         <input value={ownerName} onChange={(e) => setOwnerName(e.target.value)} placeholder="Owner name" className="w-full rounded-xl border border-stone-300 p-2.5 text-sm" />
         <input value={ownerPin} onChange={(e) => setOwnerPin(e.target.value.replace(/\D/g, "").slice(0, 4))} placeholder="Owner 4-digit PIN" inputMode="numeric" className="w-full rounded-xl border border-stone-300 p-2.5 text-sm tracking-widest" />
+        <input value={address} onChange={(e) => setAddress(e.target.value)} placeholder="Address (for map directions)" className="w-full rounded-xl border border-stone-300 p-2.5 text-sm" />
+        <label className="flex cursor-pointer items-center gap-3 rounded-xl border border-dashed border-stone-300 p-2.5 text-sm text-stone-600">
+          {logoUrl ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img src={logoUrl} alt="" className="h-8 w-8 rounded object-cover" />
+          ) : (
+            <span>🖼️</span>
+          )}
+          {uploading ? "Uploading…" : logoUrl ? "Logo added — change" : "Add logo (optional)"}
+          <input type="file" accept="image/*" className="hidden" onChange={(e) => uploadLogo(e.target.files?.[0] ?? null)} />
+        </label>
         {err && <p className="text-sm text-rose-600">{err}</p>}
         <button onClick={submit} disabled={pending} className="w-full rounded-xl bg-amber-600 py-2.5 font-semibold text-white disabled:opacity-50">
           Create hotel

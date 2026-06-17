@@ -17,10 +17,13 @@ export async function getOrgBySlug(slug: string) {
   const sb = supabaseAdmin();
   const { data } = await sb
     .from("orgs")
-    .select("id, name, slug")
+    .select("id, name, slug, logo_url")
     .eq("slug", slug)
     .maybeSingle();
-  return (data as { id: string; name: string; slug: string } | null) ?? null;
+  return (
+    (data as { id: string; name: string; slug: string; logo_url: string | null } | null) ??
+    null
+  );
 }
 
 // Public-safe staff list for one org's login name-picker (no PIN hashes).
@@ -178,6 +181,8 @@ export async function createOrg(input: {
   slug: string;
   ownerName: string;
   ownerPin: string;
+  logoUrl?: string | null;
+  address?: string | null;
 }): Promise<{ ok: boolean; error?: string; slug?: string }> {
   if (!(await isAdmin())) return { ok: false, error: "auth" };
 
@@ -198,7 +203,12 @@ export async function createOrg(input: {
 
   const { data: org, error: orgErr } = await sb
     .from("orgs")
-    .insert({ name: orgName, slug })
+    .insert({
+      name: orgName,
+      slug,
+      logo_url: input.logoUrl ?? null,
+      address: input.address?.trim() || null,
+    })
     .select("id")
     .single();
   if (orgErr || !org) return { ok: false, error: orgErr?.message ?? "org" };
@@ -225,6 +235,10 @@ export type AdminHotel = {
   lastLoginAt: string | null;
   storageBytes: number;
   members: number;
+  logoUrl: string | null;
+  address: string | null;
+  lat: number | null;
+  lng: number | null;
 };
 export type AdminFeedback = {
   id: string;
@@ -261,7 +275,11 @@ export async function getAdminData(): Promise<{
   const sb = supabaseAdmin();
 
   const [{ data: orgs }, { data: staff }, { data: fb }] = await Promise.all([
-    sb.from("orgs").select("id, name, slug, created_at, last_login_at, storage_bytes"),
+    sb
+      .from("orgs")
+      .select(
+        "id, name, slug, created_at, last_login_at, storage_bytes, logo_url, address, lat, lng"
+      ),
     sb.from("staff").select("org_id").eq("active", true),
     sb
       .from("app_feedback")
@@ -283,6 +301,10 @@ export async function getAdminData(): Promise<{
       lastLoginAt: (o.last_login_at as string) ?? null,
       storageBytes: Number(o.storage_bytes ?? 0),
       members: counts.get(o.id as string) ?? 0,
+      logoUrl: (o.logo_url as string) ?? null,
+      address: (o.address as string) ?? null,
+      lat: (o.lat as number) ?? null,
+      lng: (o.lng as number) ?? null,
     }))
     .sort((a, b) => (b.lastLoginAt ?? "").localeCompare(a.lastLoginAt ?? ""));
 
@@ -304,5 +326,52 @@ export async function resolveFeedback(id: string) {
   if (!(await isAdmin())) return { ok: false };
   const sb = supabaseAdmin();
   await sb.from("app_feedback").update({ resolved: true }).eq("id", id);
+  return { ok: true };
+}
+
+// ---------- OWNER: HOTEL PROFILE (logo + location) ----------
+export async function getMyOrg(): Promise<{
+  name: string;
+  slug: string;
+  logoUrl: string | null;
+  address: string | null;
+  lat: number | null;
+  lng: number | null;
+} | null> {
+  const s = await requireOwner();
+  const sb = supabaseAdmin();
+  const { data } = await sb
+    .from("orgs")
+    .select("name, slug, logo_url, address, lat, lng")
+    .eq("id", s.orgId)
+    .single();
+  if (!data) return null;
+  return {
+    name: data.name as string,
+    slug: data.slug as string,
+    logoUrl: (data.logo_url as string) ?? null,
+    address: (data.address as string) ?? null,
+    lat: (data.lat as number) ?? null,
+    lng: (data.lng as number) ?? null,
+  };
+}
+
+export async function updateOrgProfile(input: {
+  logoUrl?: string | null;
+  address?: string | null;
+  lat?: number | null;
+  lng?: number | null;
+}): Promise<{ ok: boolean }> {
+  const s = await requireOwner();
+  const sb = supabaseAdmin();
+  const patch: Record<string, unknown> = {
+    address: input.address?.trim() || null,
+    lat: input.lat ?? null,
+    lng: input.lng ?? null,
+  };
+  if (input.logoUrl !== undefined) patch.logo_url = input.logoUrl;
+  await sb.from("orgs").update(patch).eq("id", s.orgId);
+  revalidatePath("/hotel");
+  revalidatePath("/dashboard");
   return { ok: true };
 }

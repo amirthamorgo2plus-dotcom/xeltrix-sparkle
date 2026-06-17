@@ -26,5 +26,5 @@ export default async function HotelLogin({
   }
 
   const staff = await getStaffList(org.id);
-  return <LoginForm staff={staff} orgName={org.name} />;
+  return <LoginForm staff={staff} orgName={org.name} logoUrl={org.logo_url} />;
 }

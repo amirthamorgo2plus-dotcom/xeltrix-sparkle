@@ -10,9 +10,11 @@ type Staff = { id: string; name: string; role: string };
 export default function LoginForm({
   staff,
   orgName,
+  logoUrl,
 }: {
   staff: Staff[];
   orgName?: string;
+  logoUrl?: string | null;
 }) {
   const { t } = useI18n();
   const router = useRouter();
@@ -47,8 +49,13 @@ export default function LoginForm({
       </div>
 
       <div className="mt-10 text-center">
-        <div className="mx-auto mb-3 flex h-16 w-16 items-center justify-center rounded-2xl bg-white/15 text-3xl">
-          ✨
+        <div className="mx-auto mb-3 flex h-16 w-16 items-center justify-center overflow-hidden rounded-2xl bg-white/15 text-3xl">
+          {logoUrl ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img src={logoUrl} alt="" className="h-full w-full object-cover" />
+          ) : (
+            "✨"
+          )}
         </div>
         <h1 className="text-2xl font-bold">{orgName || t("appName")}</h1>
         <p className="text-sm text-amber-100">
