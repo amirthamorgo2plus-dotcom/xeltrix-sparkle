@@ -5,13 +5,20 @@ import { getSession } from "@/lib/session";
 import PWARegister from "@/components/PWARegister";
 
 export const metadata: Metadata = {
-  title: "Xeltrix Sparkle",
-  description: "Every room, guest-ready",
+  title: "Xeltrix Sparkle — Hotel Housekeeping & Operations",
+  description:
+    "Replace WhatsApp chaos with room checklists, photo issue reports, and real-time dashboards — in English, Tamil & Hindi. Every room guest-ready, every shift accountable.",
   manifest: "/manifest.webmanifest",
   appleWebApp: { capable: true, title: "Sparkle", statusBarStyle: "default" },
   icons: {
     icon: "/icon-192.png",
     apple: "/apple-icon.png",
+  },
+  openGraph: {
+    title: "Xeltrix Sparkle — Hotel Housekeeping & Operations",
+    description:
+      "Replace WhatsApp chaos with room checklists, photo issue reports, and real-time dashboards — in English, Tamil & Hindi.",
+    type: "website",
   },
 };
 

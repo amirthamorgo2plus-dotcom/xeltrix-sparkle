@@ -1,6 +1,6 @@
 import { redirect } from "next/navigation";
 import { getSession } from "@/lib/session";
-import Landing from "@/components/Landing";
+import OrgEntry from "@/components/OrgEntry";
 
 export const dynamic = "force-dynamic";
 
@@ -10,8 +10,8 @@ const HOME: Record<string, string> = {
   owner: "/dashboard",
 };
 
-export default async function Page() {
+export default async function LoginPage() {
   const session = await getSession();
   if (session) redirect(HOME[session.role] ?? "/rooms");
-  return <Landing />;
+  return <OrgEntry />;
 }
