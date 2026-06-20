@@ -3,48 +3,56 @@ import Link from "next/link";
 
 const WA = "https://wa.me/919731412112";
 
-function CheckRow({ label, on = true }: { label: string; on?: boolean }) {
+function Toggle({ on }: { on: boolean }) {
   return (
-    <div className="flex items-center justify-between px-3 py-2">
-      <span className="text-[11px] font-medium text-stone-700">{label}</span>
+    <span
+      className={`relative flex h-6 w-11 shrink-0 items-center rounded-full transition-colors ${
+        on ? "bg-orange-500" : "bg-stone-300"
+      }`}
+    >
       <span
-        className={`flex h-5 w-9 items-center rounded-full p-0.5 ${
-          on ? "bg-emerald-500" : "bg-stone-300"
+        className={`absolute h-4 w-4 rounded-full bg-white shadow transition-transform ${
+          on ? "translate-x-6" : "translate-x-1"
         }`}
-      >
-        <span
-          className={`h-4 w-4 rounded-full bg-white transition ${on ? "translate-x-4" : ""}`}
-        />
-      </span>
+      />
+    </span>
+  );
+}
+
+function CheckItem({ label, on }: { label: string; on: boolean }) {
+  return (
+    <div className="flex items-center justify-between border-b border-stone-100 px-3 py-2.5 last:border-0">
+      <span className="text-[11px] text-stone-700">{label}</span>
+      <Toggle on={on} />
+    </div>
+  );
+}
+
+function NavTab({
+  icon,
+  label,
+  active,
+}: {
+  icon: string;
+  label: string;
+  active?: boolean;
+}) {
+  return (
+    <div className={`flex flex-1 flex-col items-center gap-0.5 py-1.5 ${active ? "text-orange-500" : "text-stone-400"}`}>
+      <span className="text-base leading-none">{icon}</span>
+      <span className="text-[8px] font-medium leading-none">{label}</span>
     </div>
   );
 }
 
 function MiniBar({ label, pct, n }: { label: string; pct: number; n: number }) {
   return (
-    <div className="flex items-center gap-2">
-      <span className="w-14 shrink-0 text-right text-[9px] text-stone-500">{label}</span>
+    <div className="flex items-center gap-1.5">
+      <span className="w-10 shrink-0 text-right text-[8px] text-stone-500">{label}</span>
       <div className="flex-1 rounded-full bg-stone-100">
-        <div className="h-2 rounded-full bg-amber-500" style={{ width: `${pct}%` }} />
+        <div className="h-1.5 rounded-full bg-orange-400" style={{ width: `${pct}%` }} />
       </div>
-      <span className="w-3 text-[9px] font-semibold text-stone-600">{n}</span>
-    </div>
-  );
-}
-
-function StatPill({
-  value,
-  label,
-  color,
-}: {
-  value: string;
-  label: string;
-  color: string;
-}) {
-  return (
-    <div className={`rounded-xl p-2 text-center ${color}`}>
-      <p className="text-base font-bold leading-tight">{value}</p>
-      <p className="text-[9px] leading-snug">{label}</p>
+      <span className="w-2.5 text-[8px] font-semibold text-stone-600">{n}</span>
     </div>
   );
 }
@@ -64,17 +72,12 @@ function Feature({ icon, title, body }: { icon: string; title: string; body: str
 export default function Landing() {
   return (
     <div className="min-h-screen bg-stone-50 text-stone-800">
+
       {/* ── Header ── */}
-      <header className="sticky top-0 z-50 border-b border-amber-600/20 bg-gradient-to-r from-amber-500 to-orange-600 text-white">
+      <header className="sticky top-0 z-50 border-b border-orange-600/20 bg-gradient-to-r from-amber-500 to-orange-600 text-white">
         <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-3">
           <div className="flex items-center gap-2.5">
-            <Image
-              src="/icon-192.png"
-              alt="Xeltrix Sparkle"
-              width={32}
-              height={32}
-              className="rounded-lg"
-            />
+            <Image src="/icon-192.png" alt="Xeltrix Sparkle" width={32} height={32} className="rounded-lg" />
             <span className="text-lg font-bold tracking-tight">Xeltrix Sparkle</span>
           </div>
           <Link
@@ -96,8 +99,8 @@ export default function Landing() {
             Hotel housekeeping,&nbsp;finally under&nbsp;control.
           </h1>
           <p className="mt-4 max-w-md text-lg leading-relaxed text-stone-600">
-            Replace WhatsApp chaos with room checklists, photo issue reports,
-            and real-time owner dashboards — in English, Tamil &amp; Hindi.
+            Replace WhatsApp chaos with room checklists, photo reports, real-time
+            dashboards and instant push alerts — in English, Tamil &amp; Hindi.
             Every room guest-ready, every shift accountable.
           </p>
           <div className="mt-7 flex flex-wrap gap-3">
@@ -118,89 +121,160 @@ export default function Landing() {
           </div>
         </div>
 
-        {/* ── Two phone mockups: cleaner + owner ── */}
-        <div className="flex items-end justify-center gap-4">
+        {/* ── Phone mockups ── */}
+        <div className="flex items-end justify-center gap-3">
+
           {/* Cleaner view */}
-          <div className="w-[190px] shrink-0 rounded-[2rem] bg-stone-900 p-1.5 shadow-xl">
-            <div className="overflow-hidden rounded-[1.7rem] bg-stone-50">
-              <div className="bg-gradient-to-br from-amber-500 to-orange-600 px-3 py-2.5 text-white">
-                <p className="text-[11px] font-semibold">✨ Xeltrix Sparkle</p>
-                <p className="text-[9px] text-amber-100">Suresh · cleaner</p>
-              </div>
-              <div className="p-3">
-                <div className="mb-2 flex items-center justify-between">
-                  <span className="text-sm font-bold text-stone-800">Room 101</span>
-                  <span className="rounded-full bg-amber-100 px-2 py-0.5 text-[9px] font-semibold text-amber-800">
-                    Cleaning
+          <div className="w-[185px] shrink-0 rounded-[2rem] bg-stone-900 p-1.5 shadow-xl">
+            <div className="flex flex-col overflow-hidden rounded-[1.7rem] bg-stone-50">
+              {/* App header */}
+              <div className="bg-gradient-to-r from-amber-500 to-orange-600 px-2.5 py-2 text-white">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-[10px] font-bold">✨ Xeltrix Sparkle</p>
+                    <p className="text-[8px] text-orange-100">Raj · cleaner</p>
+                  </div>
+                  <span className="rounded-full bg-white/20 px-1.5 py-0.5 text-[8px] font-semibold">
+                    🔔 Alerts
                   </span>
                 </div>
-                <div className="divide-y divide-stone-100 rounded-xl bg-white shadow-sm">
-                  <CheckRow label="Floor cleaned" />
-                  <CheckRow label="Bathroom" />
-                  <CheckRow label="Bed arranged" />
-                  <CheckRow label="Bin emptied" on={false} />
-                  <CheckRow label="AC working" />
+              </div>
+              {/* Content */}
+              <div className="flex-1 p-2.5">
+                <div className="mb-2 flex items-center justify-between">
+                  <span className="text-[12px] font-bold text-stone-800">Room 1001</span>
+                  <span className="rounded-full bg-pink-100 px-1.5 py-0.5 text-[8px] font-semibold text-pink-600">Maintenance</span>
                 </div>
-                <div className="mt-2 flex items-center justify-center gap-1.5 rounded-xl border-2 border-dashed border-amber-300 bg-amber-50 py-2 text-[10px] font-medium text-amber-700">
-                  📷 Add photo
+                <div className="rounded-xl bg-white shadow-sm">
+                  <CheckItem label="Floor cleaned" on={true} />
+                  <CheckItem label="Bathroom cleaned" on={true} />
+                  <CheckItem label="Bed arranged" on={false} />
+                  <CheckItem label="Bin emptied" on={true} />
+                  <CheckItem label="AC working" on={false} />
                 </div>
-                <div className="mt-2 rounded-xl bg-amber-600 py-2 text-center text-[11px] font-semibold text-white">
-                  Mark Cleaned ✓
+                <div className="mt-2 flex items-center justify-center gap-1 rounded-xl border-2 border-dashed border-amber-300 bg-amber-50 py-1.5 text-[9px] font-medium text-amber-700">
+                  📷 Add photos
                 </div>
+                {/* Photo thumbnail */}
+                <div className="mt-1.5 h-7 w-7 overflow-hidden rounded-lg bg-stone-300">
+                  <div className="h-full w-full bg-gradient-to-br from-stone-400 to-stone-500" />
+                </div>
+                <button className="mt-2 w-full rounded-xl bg-orange-500 py-2 text-[10px] font-bold text-white">
+                  Mark Cleaned
+                </button>
+                <button className="mt-1.5 w-full rounded-xl bg-pink-50 py-1.5 text-[9px] font-semibold text-pink-600">
+                  🔧 Report Issue
+                </button>
+              </div>
+              {/* Bottom nav — 3 tabs for cleaner */}
+              <div className="flex border-t border-stone-200 bg-white">
+                <NavTab icon="🛏" label="My Rooms" active />
+                <NavTab icon="🔧" label="Issues" />
+                <NavTab icon="⏰" label="Check In" />
               </div>
             </div>
           </div>
 
-          {/* Owner reports view — slightly taller / elevated */}
-          <div className="w-[210px] shrink-0 -translate-y-4 rounded-[2rem] bg-stone-900 p-1.5 shadow-2xl ring-2 ring-amber-400/30">
-            <div className="overflow-hidden rounded-[1.7rem] bg-stone-50">
-              <div className="bg-gradient-to-br from-amber-500 to-orange-600 px-3 py-2.5 text-white">
-                <p className="text-[11px] font-semibold">✨ Xeltrix Sparkle</p>
-                <p className="text-[9px] text-amber-100">Anitha · owner</p>
+          {/* Owner reports view — elevated */}
+          <div className="w-[205px] shrink-0 -translate-y-4 rounded-[2rem] bg-stone-900 p-1.5 shadow-2xl ring-2 ring-amber-400/40">
+            <div className="flex flex-col overflow-hidden rounded-[1.7rem] bg-stone-50">
+              {/* App header */}
+              <div className="bg-gradient-to-r from-amber-500 to-orange-600 px-2.5 py-2 text-white">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-[10px] font-bold">✨ Xeltrix Sparkle</p>
+                    <p className="text-[8px] text-orange-100">Saratha · owner</p>
+                  </div>
+                  <span className="rounded-full bg-white/20 px-1.5 py-0.5 text-[8px] font-semibold">
+                    🔔 Alerts
+                  </span>
+                </div>
               </div>
-              <div className="p-3">
-                <p className="mb-1.5 text-[9px] font-semibold uppercase tracking-wide text-stone-500">
-                  Attendance
-                </p>
-                <div className="mb-2 grid grid-cols-2 gap-1.5">
-                  <StatPill value="4" label="Present" color="bg-amber-50 text-amber-700" />
-                  <StatPill value="7" label="Check-ins" color="bg-blue-50 text-blue-700" />
+              {/* Content */}
+              <div className="flex-1 p-2.5">
+                {/* Oldest open issues */}
+                <p className="mb-1 text-[8px] font-semibold text-stone-400 uppercase tracking-wide">Oldest open issues</p>
+                <div className="mb-2 space-y-0.5 rounded-xl bg-white p-2 shadow-sm">
+                  {[
+                    { room: "#1003", label: "Water bottles not available", urgent: true },
+                    { room: "#1001", label: "Tap is leaking", urgent: true },
+                    { room: "#1001", label: "Floor not clean…", urgent: false },
+                  ].map((item, i) => (
+                    <div key={i} className="flex items-center gap-1">
+                      {item.urgent && <span className="text-[7px]">⚠️</span>}
+                      <span className="text-[8px] font-semibold text-stone-500">{item.room}</span>
+                      <span className="truncate text-[8px] text-stone-600">{item.label}</span>
+                    </div>
+                  ))}
                 </div>
-                {/* Mini attendance bar chart */}
-                <div className="mb-2 rounded-xl bg-white p-2 shadow-sm">
-                  <p className="mb-1.5 text-[8px] text-stone-400">Present per day</p>
-                  <div className="flex h-8 items-end gap-0.5">
-                    {[0,0,0,0,0,0,0,0,2,3,4,0,0,0,0,0,0,0,0,0].map((v, i) => (
-                      <div
-                        key={i}
-                        className="flex-1 rounded-t bg-amber-400"
-                        style={{ height: v ? `${(v / 4) * 100}%` : "2px", opacity: v ? 1 : 0.15 }}
-                      />
-                    ))}
+
+                {/* Star performer */}
+                <p className="mb-1 text-[8px] font-semibold text-stone-400 uppercase tracking-wide">Employee performance</p>
+                <div className="mb-2 rounded-xl bg-amber-50 p-2">
+                  <p className="text-[7px] font-bold text-amber-600 uppercase tracking-wide">⭐ Star Performer</p>
+                  <p className="text-[11px] font-bold text-stone-800">Jose</p>
+                  <p className="text-[8px] text-stone-500">2 Cleaned · 0 Redos</p>
+                </div>
+
+                {/* Staff cards */}
+                {[
+                  { name: "Jose", cleaned: 2, redos: 0, avg: "8m" },
+                  { name: "Raj", cleaned: 1, redos: 0, avg: "4m" },
+                ].map((s) => (
+                  <div key={s.name} className="mb-1.5 rounded-xl bg-white p-2 shadow-sm">
+                    <p className="mb-1 text-[9px] font-bold text-stone-700">{s.name}</p>
+                    <div className="grid grid-cols-3 gap-1 text-center">
+                      <div>
+                        <p className="text-[10px] font-bold text-stone-800">{s.cleaned}</p>
+                        <p className="text-[7px] text-stone-400">Cleaned</p>
+                      </div>
+                      <div>
+                        <p className="text-[10px] font-bold text-stone-800">{s.redos}</p>
+                        <p className="text-[7px] text-stone-400">Redos</p>
+                      </div>
+                      <div>
+                        <p className="text-[10px] font-bold text-stone-800">{s.avg}</p>
+                        <p className="text-[7px] text-stone-400">Avg time</p>
+                      </div>
+                    </div>
                   </div>
-                </div>
-                <p className="mb-1.5 text-[9px] font-semibold uppercase tracking-wide text-stone-500">
-                  Issues
-                </p>
-                <div className="mb-2 grid grid-cols-4 gap-1">
-                  <StatPill value="7" label="Total" color="bg-stone-100 text-stone-700" />
-                  <StatPill value="5" label="Open" color="bg-rose-50 text-rose-600" />
-                  <StatPill value="2" label="Fixed" color="bg-emerald-50 text-emerald-700" />
-                  <StatPill value="0" label="Urgent" color="bg-white border border-stone-200 text-stone-700" />
-                </div>
-                <div className="rounded-xl bg-white p-2 shadow-sm">
-                  <p className="mb-1.5 text-[8px] text-stone-400">By category</p>
-                  <div className="space-y-1.5">
-                    <MiniBar label="Other" pct={71} n={5} />
-                    <MiniBar label="Plumbing" pct={29} n={2} />
-                  </div>
-                </div>
-                <div className="mt-2 flex items-center justify-between rounded-xl bg-white px-2.5 py-2 shadow-sm">
-                  <span className="text-[9px] text-stone-500">Avg fix time</span>
-                  <span className="text-[10px] font-bold text-stone-800">8h 28m</span>
-                </div>
+                ))}
+              </div>
+              {/* Bottom nav — 5 tabs for owner */}
+              <div className="flex border-t border-stone-200 bg-white">
+                <NavTab icon="📊" label="Dashboard" />
+                <NavTab icon="🔍" label="Inspect" />
+                <NavTab icon="🔧" label="Issues" />
+                <NavTab icon="📈" label="Reports" active />
+                <NavTab icon="⏰" label="Check In" />
               </div>
             </div>
+          </div>
+
+        </div>
+      </section>
+
+      {/* ── Push alerts spotlight ── */}
+      <section className="bg-amber-600 py-10 text-white">
+        <div className="mx-auto max-w-5xl px-4">
+          <div className="flex flex-col items-center gap-6 md:flex-row md:gap-10">
+            <div className="text-5xl">🔔</div>
+            <div>
+              <h2 className="text-xl font-bold">Instant push alerts — for everyone</h2>
+              <p className="mt-1 max-w-xl text-amber-100">
+                Supervisors get notified the moment a cleaner marks a room ready. Owners are alerted
+                on urgent maintenance issues — right on their phone, even when the app is closed.
+                No more checking WhatsApp every 10 minutes.
+              </p>
+            </div>
+            <a
+              href={WA}
+              target="_blank"
+              rel="noreferrer"
+              className="shrink-0 rounded-full bg-white px-5 py-2.5 text-sm font-semibold text-amber-700 hover:bg-amber-50"
+            >
+              See it live
+            </a>
           </div>
         </div>
       </section>
@@ -218,27 +292,42 @@ export default function Landing() {
             <Feature
               icon="✅"
               title="Room checklists"
-              body="Cleaners work through a clear checklist per room and mark it ready — no missed steps, no paper."
+              body="Cleaners work through a clear per-room checklist and mark it ready — no missed steps, no paper."
             />
             <Feature
               icon="📷"
-              title="Photo maintenance reports"
-              body="Report a broken AC or leak with a photo and voice note in seconds. Nothing gets lost in WhatsApp."
+              title="Photo & voice reports"
+              body="Report a broken AC or leak with a photo and voice note. Nothing gets lost in a WhatsApp thread."
+            />
+            <Feature
+              icon="⚠️"
+              title="Urgent issue flag"
+              body="Mark any issue as Urgent — supervisors and owners are alerted instantly so nothing waits."
             />
             <Feature
               icon="📊"
               title="Real-time owner reports"
-              body="Live dashboards for attendance, issues, avg fix times and star performer — by day or by month."
+              body="Live dashboards for attendance, open issues, avg fix times and star performer — by day or month."
+            />
+            <Feature
+              icon="⭐"
+              title="Star performer tracking"
+              body="See who cleaned the most rooms, fastest, with zero redos — motivate your best staff with data."
             />
             <Feature
               icon="🌐"
               title="English · தமிழ் · हिन्दी"
-              body="Every screen in three languages so all your staff understand it instantly, without training."
+              body="Every screen in three languages so all your staff understand it instantly, without any training."
             />
             <Feature
               icon="👥"
               title="Roles that fit your team"
               body="Cleaner, supervisor and owner — each sees exactly what they need, protected by a 4-digit PIN."
+            />
+            <Feature
+              icon="🔔"
+              title="Push notifications"
+              body="Staff get room assignments on their phone. Owners are alerted on urgent issues — even offline."
             />
             <Feature
               icon="🏨"
@@ -270,13 +359,10 @@ export default function Landing() {
               {
                 n: "3",
                 t: "Track & improve",
-                d: "Owners watch live reports — who's present, what's pending, fix times and star performer.",
+                d: "Owners watch live reports — attendance, open issues, fix times, star performer — all in real time.",
               },
             ].map((s) => (
-              <div
-                key={s.n}
-                className="rounded-2xl border border-stone-200 bg-white p-6 text-center shadow-sm"
-              >
+              <div key={s.n} className="rounded-2xl border border-stone-200 bg-white p-6 text-center shadow-sm">
                 <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-amber-600 text-xl font-bold text-white">
                   {s.n}
                 </div>
@@ -296,11 +382,7 @@ export default function Landing() {
             {[
               { icon: "🏨", t: "Hotels", d: "Boutique to mid-size hotels keeping every room guest-ready." },
               { icon: "🌴", t: "Resorts", d: "Larger teams and grounds with many rooms across multiple shifts." },
-              {
-                icon: "🏢",
-                t: "Service apartments",
-                d: "Managed stays that need spotless turnarounds, every single time.",
-              },
+              { icon: "🏢", t: "Service apartments", d: "Managed stays that need spotless turnarounds, every single time." },
             ].map((w) => (
               <div key={w.t} className="rounded-2xl bg-stone-50 p-6">
                 <div className="mb-3 text-4xl">{w.icon}</div>
@@ -316,13 +398,7 @@ export default function Landing() {
       <section className="bg-gradient-to-br from-amber-500 to-orange-600 py-16 text-center text-white">
         <div className="mx-auto max-w-2xl px-4">
           <div className="mb-5 flex justify-center">
-            <Image
-              src="/icon-192.png"
-              alt="Xeltrix Sparkle"
-              width={60}
-              height={60}
-              className="rounded-2xl shadow-lg"
-            />
+            <Image src="/icon-192.png" alt="Xeltrix Sparkle" width={60} height={60} className="rounded-2xl shadow-lg" />
           </div>
           <h2 className="text-3xl font-bold">See Xeltrix Sparkle on your rooms</h2>
           <p className="mx-auto mt-3 max-w-md text-amber-50">
@@ -343,23 +419,13 @@ export default function Landing() {
       <footer className="bg-stone-900 py-8 text-stone-400">
         <div className="mx-auto flex max-w-6xl flex-col items-center justify-between gap-3 px-4 sm:flex-row">
           <div className="flex items-center gap-2.5">
-            <Image
-              src="/icon-192.png"
-              alt="Xeltrix Sparkle"
-              width={28}
-              height={28}
-              className="rounded-md"
-            />
+            <Image src="/icon-192.png" alt="Xeltrix Sparkle" width={28} height={28} className="rounded-md" />
             <span className="font-semibold text-white">Xeltrix Sparkle</span>
           </div>
           <p className="text-sm">Hotel housekeeping &amp; operations</p>
           <div className="flex items-center gap-4 text-sm">
-            <Link href="/login" className="hover:text-white">
-              Login
-            </Link>
-            <a href={WA} target="_blank" rel="noreferrer" className="hover:text-white">
-              Contact
-            </a>
+            <Link href="/login" className="hover:text-white">Login</Link>
+            <a href={WA} target="_blank" rel="noreferrer" className="hover:text-white">Contact</a>
           </div>
         </div>
         <p className="mt-4 text-center text-xs text-stone-500">
