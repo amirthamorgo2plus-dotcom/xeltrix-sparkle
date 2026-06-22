@@ -80,12 +80,20 @@ export default function Landing() {
             <Image src="/icon-192.png" alt="Xeltrix Sparkle" width={32} height={32} className="rounded-lg" />
             <span className="text-lg font-bold tracking-tight">Xeltrix Sparkle</span>
           </div>
-          <Link
-            href="/login"
-            className="rounded-full bg-white px-4 py-2 text-sm font-semibold text-amber-700 shadow-sm hover:bg-amber-50"
-          >
-            Login
-          </Link>
+          <div className="flex items-center gap-2">
+            <Link
+              href="/marketplace"
+              className="rounded-full px-3 py-2 text-sm font-semibold text-white/90 hover:bg-white/15"
+            >
+              Marketplace
+            </Link>
+            <Link
+              href="/login"
+              className="rounded-full bg-white px-4 py-2 text-sm font-semibold text-amber-700 shadow-sm hover:bg-amber-50"
+            >
+              Login
+            </Link>
+          </div>
         </div>
       </header>
 
@@ -410,6 +418,35 @@ export default function Landing() {
                 <p className="text-sm text-stone-500">{w.d}</p>
               </div>
             ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ── Marketplace teaser ── */}
+      <section className="py-16">
+        <div className="mx-auto max-w-5xl px-4">
+          <div className="overflow-hidden rounded-3xl border border-amber-200 bg-gradient-to-br from-amber-50 to-orange-50 p-8 md:p-10">
+            <div className="flex flex-col items-start gap-6 md:flex-row md:items-center md:justify-between">
+              <div>
+                <span className="inline-block rounded-full bg-amber-200/70 px-3 py-1 text-xs font-semibold uppercase tracking-wide text-amber-800">
+                  🚀 New · Coming soon
+                </span>
+                <h2 className="mt-3 text-2xl font-bold text-stone-900 md:text-3xl">
+                  Introducing Xeltrix Marketplace
+                </h2>
+                <p className="mt-2 max-w-xl text-stone-600">
+                  The same platform now connects you to verified hotel suppliers — laundry,
+                  cleaning chemicals, linen, manpower, F&amp;B and more. Post a requirement,
+                  compare quotes and hire the best-rated. Like Upwork, for hotels.
+                </p>
+              </div>
+              <Link
+                href="/marketplace"
+                className="shrink-0 rounded-full bg-amber-600 px-6 py-3 text-base font-semibold text-white shadow-sm hover:bg-amber-700"
+              >
+                Explore the marketplace →
+              </Link>
+            </div>
           </div>
         </div>
       </section>
