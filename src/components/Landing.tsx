@@ -295,6 +295,16 @@ export default function Landing() {
               body="Cleaners work through a clear per-room checklist and mark it ready — no missed steps, no paper."
             />
             <Feature
+              icon="🧹"
+              title="Room assignment"
+              body="Supervisors assign each room to a cleaner in one tap. When a room is vacated, it goes straight back into the cleaning queue."
+            />
+            <Feature
+              icon="🕒"
+              title="Attendance & check-in"
+              body="Staff check in from their phone each shift. Owners and supervisors see who's present today, live — no registers."
+            />
+            <Feature
               icon="📷"
               title="Photo & voice reports"
               body="Report a broken AC or leak with a photo and voice note. Nothing gets lost in a WhatsApp thread."
@@ -313,6 +323,16 @@ export default function Landing() {
               icon="⭐"
               title="Star performer tracking"
               body="See who cleaned the most rooms, fastest, with zero redos — motivate your best staff with data."
+            />
+            <Feature
+              icon="📥"
+              title="Export to Excel"
+              body="Download attendance, issues and performance as an Excel sheet — Tamil and Hindi supported — for payroll and audits."
+            />
+            <Feature
+              icon="📲"
+              title="Installs like an app"
+              body="Add Xeltrix Sparkle to any phone's home screen — no Play Store, no downloads. Works even on a weak connection."
             />
             <Feature
               icon="🌐"
