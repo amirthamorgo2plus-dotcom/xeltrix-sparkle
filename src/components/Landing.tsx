@@ -1,7 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 
-const WA = "https://wa.me/919731412112";
+const WA = "https://wa.me/918220980134";
 
 function Toggle({ on }: { on: boolean }) {
   return (

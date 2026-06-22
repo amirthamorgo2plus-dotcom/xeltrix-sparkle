@@ -1,9 +1,9 @@
 import Image from "next/image";
 import Link from "next/link";
 
-const WA = "https://wa.me/919731412112";
+const WA = "https://wa.me/918220980134";
 const WAITLIST =
-  "https://wa.me/919731412112?text=I%20want%20to%20join%20the%20Xeltrix%20Marketplace%20waitlist";
+  "https://wa.me/918220980134?text=I%20want%20to%20join%20the%20Xeltrix%20Marketplace%20waitlist";
 
 function Category({ icon, title, body }: { icon: string; title: string; body: string }) {
   return (
