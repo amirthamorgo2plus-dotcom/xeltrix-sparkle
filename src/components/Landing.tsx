@@ -82,8 +82,14 @@ export default function Landing() {
           </div>
           <div className="flex items-center gap-2">
             <Link
-              href="/marketplace"
+              href="/demo"
               className="rounded-full px-3 py-2 text-sm font-semibold text-white/90 hover:bg-white/15"
+            >
+              Demo
+            </Link>
+            <Link
+              href="/marketplace"
+              className="hidden rounded-full px-3 py-2 text-sm font-semibold text-white/90 hover:bg-white/15 sm:block"
             >
               Marketplace
             </Link>
@@ -121,11 +127,23 @@ export default function Landing() {
               Book a demo
             </a>
             <Link
+              href="/demo"
+              className="rounded-full border border-amber-300 bg-amber-50 px-6 py-3 text-base font-semibold text-amber-700 hover:bg-amber-100"
+            >
+              🏨 View live demo
+            </Link>
+            <Link
               href="/login"
               className="rounded-full border border-stone-300 bg-white px-6 py-3 text-base font-semibold text-stone-700 hover:bg-stone-100"
             >
               Login
             </Link>
+          </div>
+          {/* trust row */}
+          <div className="mt-5 flex flex-wrap gap-x-5 gap-y-2 text-sm text-stone-500">
+            <span className="flex items-center gap-1.5">✅ Free to start</span>
+            <span className="flex items-center gap-1.5">✅ Tamil &amp; English</span>
+            <span className="flex items-center gap-1.5">✅ Works on any phone</span>
           </div>
         </div>
 
